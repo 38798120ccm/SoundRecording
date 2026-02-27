@@ -1,5 +1,6 @@
 package com.soundrecording;
 
+import com.soundrecording.Blocks.ModBlocks;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Events.ModEvents;
 import com.soundrecording.Items.ModItems;
@@ -26,6 +27,7 @@ public class SoundRecordingMod implements ModInitializer {
 
 		ModComponents.initialize();
 		ModItems.initialize();
+		ModBlocks.initialize();
 		ModScreenHandler.initialize();
 		ModEvents.addListeners();
 		ModPayloads.initialize();

@@ -93,7 +93,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
                 }
                 else {
-                    PlayTickSound(world, stack, tickComponent);
+                    PlayTickSound(world, stack, tickComponent.tick());
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
                 }
                 //SoundRecordingMod.LOGGER.info("inventoryTick-soundplaying");
@@ -123,12 +123,12 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         return false;
     }
 
-    void PlayTickSound(World world, ItemStack stack, TickComponent tickComponent){
+    void PlayTickSound(World world, ItemStack stack, int tick){
         if(world.isClient){
             RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
             MinecraftClient client = MinecraftClient.getInstance();
             for(int i=0; i<rc.tick().size(); i++){
-                if(rc.tick().get(i) == tickComponent.tick()){
+                if(rc.tick().get(i) == tick){
                     PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
                             SoundEvent.of(rc.sound().get(i).eventIdentifier()), SoundCategory.RECORDS,
                             rc.pos().get(i), rc.dir().get(i),

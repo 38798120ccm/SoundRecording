@@ -43,8 +43,6 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
             WeightedSoundSet weightedSoundSet = soundManager.get(this.id);
             if (weightedSoundSet == null) {
                 this.sound = SoundManager.MISSING_SOUND;
-            } else {
-
             }
             return weightedSoundSet;
         }
