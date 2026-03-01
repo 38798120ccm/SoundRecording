@@ -1,8 +1,10 @@
 package com.soundrecording;
 
+import com.soundrecording.Blocks.Entity.ModBlockEntities;
 import com.soundrecording.Blocks.ModBlocks;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Events.ModEvents;
+import com.soundrecording.Items.ModItemGroups;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ModPayloads;
 import com.soundrecording.Screens.ModScreenHandler;
@@ -28,8 +30,10 @@ public class SoundRecordingMod implements ModInitializer {
 		ModComponents.initialize();
 		ModItems.initialize();
 		ModBlocks.initialize();
+		ModBlockEntities.initialize();
+		ModItemGroups.initialize();
 		ModScreenHandler.initialize();
-		ModEvents.addListeners();
+		ModEvents.initialize();
 		ModPayloads.initialize();
 
 		LOGGER.info("Hello Fabric world!");

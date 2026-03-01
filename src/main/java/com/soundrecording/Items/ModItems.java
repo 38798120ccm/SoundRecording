@@ -1,4 +1,5 @@
 package com.soundrecording.Items;
+import com.soundrecording.Blocks.ModBlocks;
 import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4Player;
@@ -38,20 +39,7 @@ public class ModItems {
         return Registry.register(Registries.ITEM, itemID, item);
     }
 
-    public static final RegistryKey<ItemGroup> SOUND_RECORDING_ITEM_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), Identifier.of(SoundRecordingMod.MOD_ID, "item_group"));
-    public static final ItemGroup SOUND_RECORDING_ITEM_GROUP = FabricItemGroup.builder()
-            .icon(() -> new ItemStack(ModItems.MICROPHONE))
-            .displayName(Text.translatable("itemGroup.soundrecording-mod"))
-            .build();
 
     public static void initialize() {
-        Registry.register(Registries.ITEM_GROUP,SOUND_RECORDING_ITEM_GROUP_KEY, SOUND_RECORDING_ITEM_GROUP);
-
-        ItemGroupEvents.modifyEntriesEvent(SOUND_RECORDING_ITEM_GROUP_KEY).register(itemGroup -> {
-            itemGroup.add(ModItems.TESTITEM);
-            itemGroup.add(ModItems.MICROPHONE);
-            itemGroup.add(ModItems.MP4PLAYER);
-            itemGroup.add(ModItems.MICROSD);
-        });
     }
 }

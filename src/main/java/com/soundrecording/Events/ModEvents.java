@@ -8,7 +8,7 @@ public class ModEvents {
 
     public ModEvents() {throw new AssertionError();}
 
-    public static void addListeners(){
+    public static void initialize(){
         SoundRecordingMod.LOGGER.info("Adding listeners");
 
         addSoundListenerListener();

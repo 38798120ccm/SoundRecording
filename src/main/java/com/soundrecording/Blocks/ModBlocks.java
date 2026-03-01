@@ -13,8 +13,11 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
-    public static final Block Test_BLOCK = registerBlock("test_block",
+    public static final Block TEST_BLOCK = registerBlock("test_block",
             new Block(AbstractBlock.Settings.create().strength(4f).requiresTool().sounds(BlockSoundGroup.COPPER)));
+
+    public static final Block SPEAKER_BLOCK = registerBlock("speaker_block",
+            new SpeakerBlock(AbstractBlock.Settings.create().nonOpaque()));
 
     private static Block registerBlock(String name, Block block){
         registerBlockItem(name, block);
@@ -28,10 +31,6 @@ public class ModBlocks {
 
     public static void initialize(){
         SoundRecordingMod.LOGGER.info("Registering Mod Blocks for " + SoundRecordingMod.MOD_ID);
-
-        ItemGroupEvents.modifyEntriesEvent(ModItems.SOUND_RECORDING_ITEM_GROUP_KEY).register(entries -> {
-            entries.add(ModBlocks.Test_BLOCK);
-        });
     }
 
 }

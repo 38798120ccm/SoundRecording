@@ -1,4 +1,4 @@
-package com.soundrecording.Interface;
+package com.soundrecording.Blocks.Entity;
 
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
