@@ -5,25 +5,37 @@ import com.soundrecording.Blocks.Entity.SpeakerBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
+import net.minecraft.state.StateManager;
+import net.minecraft.state.property.DirectionProperty;
+import net.minecraft.state.property.EnumProperty;
+import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
 import net.minecraft.util.ItemScatterer;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.util.shape.VoxelShape;
+import net.minecraft.world.BlockView;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider {
-    private static final VoxelShape SHAPE =
-            Block.createCuboidShape(2, 0, 2, 14, 13, 14);
-
     protected SpeakerBlock(Settings settings) {
         super(settings);
+        setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
+
+    private static final VoxelShape X_SHAPE =
+            Block.createCuboidShape(4, 0, 2, 12, 7, 14);
+    private static final VoxelShape Z_SHAPE =
+            Block.createCuboidShape(2, 0, 4, 14, 7, 12);
+
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
@@ -34,6 +46,21 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
     @Override
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new SpeakerBlockEntity(pos, state);
+    }
+
+    @Override
+    public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
+        return (state.get(FACING) == Direction.NORTH || state.get(FACING) == Direction.SOUTH)? Z_SHAPE : X_SHAPE;
+    }
+
+    @Override
+    public BlockState getPlacementState(ItemPlacementContext ctx) {
+        return getDefaultState().with(FACING, ctx.getHorizontalPlayerFacing().getOpposite());
+    }
+
+    @Override
+    protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
+        builder.add(FACING);
     }
 
     @Override
@@ -74,7 +101,6 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
                 world.updateListeners(pos, state, state, 0);
             }
         }
-
         return ItemActionResult.SUCCESS;
     }
 }

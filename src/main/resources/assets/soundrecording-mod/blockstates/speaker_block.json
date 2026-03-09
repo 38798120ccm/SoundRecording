@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "soundrecording-mod:block/speaker_block",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "soundrecording-mod:block/speaker_block"
+    },
+    "facing=south": {
+      "model": "soundrecording-mod:block/speaker_block",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "soundrecording-mod:block/speaker_block",
+      "y": 270
+    }
+  }
+}

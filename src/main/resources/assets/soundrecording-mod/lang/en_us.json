@@ -6,6 +6,7 @@
   "item.soundrecording-mod.mp4player": "Mp4Player",
   "item.soundrecording-mod.microsd": "MicroSD",
 
+  "block.soundrecording-mod.speaker_block": "Speaker",
 
 
   "soundrecording-mod.tick": "Tick: %1$s"

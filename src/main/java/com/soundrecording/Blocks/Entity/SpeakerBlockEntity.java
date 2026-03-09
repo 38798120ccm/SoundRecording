@@ -22,7 +22,7 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
 
     @Override
     public DefaultedList<ItemStack> getItems() {
-        return null;
+        return inventory;
     }
 
     @Override
