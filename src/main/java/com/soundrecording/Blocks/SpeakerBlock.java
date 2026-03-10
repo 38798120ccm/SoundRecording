@@ -4,7 +4,10 @@ import com.mojang.serialization.MapCodec;
 import com.soundrecording.Blocks.Entity.SpeakerBlockEntity;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.BlockEntityTicker;
+import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
@@ -30,13 +33,6 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
         setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
     }
 
-    private static final VoxelShape X_SHAPE =
-            Block.createCuboidShape(4, 0, 2, 12, 7, 14);
-    private static final VoxelShape Z_SHAPE =
-            Block.createCuboidShape(2, 0, 4, 14, 7, 12);
-
-    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
-
     @Override
     protected MapCodec<? extends BlockWithEntity> getCodec() {
         return null;
@@ -47,6 +43,13 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
     public BlockEntity createBlockEntity(BlockPos pos, BlockState state) {
         return new SpeakerBlockEntity(pos, state);
     }
+
+    private static final VoxelShape X_SHAPE =
+            Block.createCuboidShape(4, 0, 2, 12, 7, 14);
+    private static final VoxelShape Z_SHAPE =
+            Block.createCuboidShape(2, 0, 4, 14, 7, 12);
+
+    public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -84,7 +87,7 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
     protected ItemActionResult onUseWithItem(ItemStack stack, BlockState state, World world, BlockPos pos,
                                              PlayerEntity player, Hand hand, BlockHitResult hit) {
         if(world.getBlockEntity(pos) instanceof SpeakerBlockEntity speakerBlockEntity){
-            if(speakerBlockEntity.isEmpty() && !stack.isEmpty()){
+            if(speakerBlockEntity.isEmpty() && !stack.isEmpty() && speakerBlockEntity.isValid(0, stack)){
                 speakerBlockEntity.setStack(0, stack.copyWithCount(1));
                 world.playSound(player, pos, SoundEvents.ENTITY_ITEM_PICKUP, SoundCategory.BLOCKS, 1f, 2f);
                 stack.decrement(1);
@@ -102,5 +105,16 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
             }
         }
         return ItemActionResult.SUCCESS;
+    }
+
+    @Nullable
+    @Override
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(World world, BlockState state, BlockEntityType<T> type) {
+
+        return (world1, pos, state1, be) -> {
+            if (be instanceof SpeakerBlockEntity speakerBe) {
+                speakerBe.tick(world1, pos, state1);
+            }
+        };
     }
 }

@@ -17,7 +17,7 @@ public class ModBlocks {
             new Block(AbstractBlock.Settings.create().strength(4f).requiresTool().sounds(BlockSoundGroup.COPPER)));
 
     public static final Block SPEAKER_BLOCK = registerBlock("speaker_block",
-            new SpeakerBlock(AbstractBlock.Settings.create().nonOpaque()));
+            new SpeakerBlock(AbstractBlock.Settings.create().strength(1f).sounds(BlockSoundGroup.COPPER)));
 
     private static Block registerBlock(String name, Block block){
         registerBlockItem(name, block);
