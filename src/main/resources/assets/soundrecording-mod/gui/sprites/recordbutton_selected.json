@@ -1,0 +1,7 @@
+{
+  "type": "nine_slice",
+  "texture": "modid:gui/sprites/mp4recordbutton_selected.png",
+  "width": 13,
+  "height": 13,
+  "border": 1
+}

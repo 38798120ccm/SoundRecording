@@ -13,9 +13,6 @@ import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.Identifier;
 
 public class ModBlocks {
-    public static final Block TEST_BLOCK = registerBlock("test_block",
-            new Block(AbstractBlock.Settings.create().strength(4f).requiresTool().sounds(BlockSoundGroup.COPPER)));
-
     public static final Block SPEAKER_BLOCK = registerBlock("speaker_block",
             new SpeakerBlock(AbstractBlock.Settings.create().strength(1f).sounds(BlockSoundGroup.COPPER)));
 

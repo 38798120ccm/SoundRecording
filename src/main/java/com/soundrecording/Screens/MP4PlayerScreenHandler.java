@@ -30,7 +30,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         this.mp4PlayerInventory = new MP4PlayerInventory(this, itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack());
         this.playerInventory = playerInventory;
 
-        this.addSlot(new MP4PlayerSlot(mp4PlayerInventory, 0, 80, 35));
+        this.addSlot(new MP4PlayerSlot(mp4PlayerInventory, 0, 33, 33));
 
         addPlayerInventory(playerInventory);
         addPlayerHotbar(playerInventory);
@@ -93,6 +93,8 @@ public class MP4PlayerScreenHandler extends ScreenHandler {
         }
         return super.onButtonClick(player, id);
     }
+
+
 
     private void addPlayerInventory(PlayerInventory playerInventory){
         for(int i=0; i<3; ++i){

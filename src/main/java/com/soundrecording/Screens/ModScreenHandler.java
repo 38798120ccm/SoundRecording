@@ -20,13 +20,6 @@ public class ModScreenHandler {
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_screen_handler"),
                     new ExtendedScreenHandlerType<>(MP4PlayerScreenHandler::new, ItemStackCodec.PACKET_CODEC));
 
-//    public static <T extends ScreenHandler, D extends CustomPayload> ExtendedScreenHandlerType<T, D>
-//                register(String name,
-//                         ExtendedScreenHandlerType.ExtendedFactory<T, D> factory,
-//                         PacketCodec<? super RegistryByteBuf, D> codec){
-//        return Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, name),
-//                new ExtendedScreenHandlerType<>(factory, codec));
-//    }
     public static void initialize(){
         SoundRecordingMod.LOGGER.info("Registering Screen Handlers for " + SoundRecordingMod.MOD_ID);
     }

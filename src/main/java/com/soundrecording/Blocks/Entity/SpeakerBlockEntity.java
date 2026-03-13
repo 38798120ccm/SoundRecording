@@ -4,8 +4,10 @@ import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Componets.RecordingComponent;
 import com.soundrecording.Componets.TickComponent;
 import com.soundrecording.Items.ModItems;
+import com.soundrecording.SoundInstance.DistancedSoundInstance;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
 import com.soundrecording.SoundRecordingMod;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -20,13 +22,15 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 public class SpeakerBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
     public int tick = 0;
-    public float volume = 1;
+    public float volume = 1f;
+    public float range = 15;
 
     public SpeakerBlockEntity(BlockPos pos, BlockState state) {
         super(ModBlockEntities.SPEAKER_BE, pos, state);
@@ -73,7 +77,12 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
                 if(tc.tick() == 0){return;}
                 if(tick <= tc.tick()){
                     RecordingComponent rc = inventory.get(0).get(ModComponents.RECORDING_COMPONENT);
-                    playTickSound(world, rc, tick);
+                    if(true){
+                        playDistanceSound(world, rc, tick, pos);
+                    }
+                    else{
+                        playPlayerAroundSound(world, rc, tick, pos);
+                    }
                     tick++;
                 }
                 else{
@@ -82,9 +91,12 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
             }
         }
     }
-    void playTickSound(World world, RecordingComponent rc, int tick){
+
+    void playPlayerAroundSound(World world, RecordingComponent rc, int tick, BlockPos pos){
         if(world.isClient){
             MinecraftClient client = MinecraftClient.getInstance();
+            if(client.player.getPos().squaredDistanceTo(Vec3d.ofCenter(pos)) > range*range) return;
+
             for(int i=0; i<rc.tick().size(); i++){
                 if(rc.tick().get(i) == tick){
                     PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
@@ -93,6 +105,25 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
                             rc.sound().get(i).volume()*volume,
                             rc.sound().get(i).pitch(),
                             true, rc.sound().get(i));
+                    client.getSoundManager().play(instance);
+                }
+            }
+        }
+    }
+
+    void playDistanceSound(World world, RecordingComponent rc, int tick, BlockPos pos){
+        if(world.isClient){
+            MinecraftClient client = MinecraftClient.getInstance();
+            if(client.player.getPos().squaredDistanceTo(Vec3d.ofCenter(pos)) > range*range) return;
+
+            for(int i=0; i<rc.tick().size(); i++){
+                if(rc.tick().get(i) == tick){
+                    DistancedSoundInstance instance = new DistancedSoundInstance(client.player, pos,
+                            SoundEvent.of(rc.sound().get(i).eventIdentifier()), SoundCategory.RECORDS,
+                            rc.pos().get(i),
+                            rc.sound().get(i).volume()*volume,
+                            rc.sound().get(i).pitch(),
+                            rc.sound().get(i));
                     client.getSoundManager().play(instance);
                 }
             }

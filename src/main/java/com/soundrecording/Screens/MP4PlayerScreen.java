@@ -5,8 +5,10 @@ import com.soundrecording.Screens.Widgets.MP4VolumeSlider;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.text.Text;
@@ -14,7 +16,12 @@ import net.minecraft.util.Identifier;
 
 public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     public static Identifier GUI_TEXTURE =
-            Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4player_gui.png");
+            Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player_gui.png");
+
+    public static final ButtonTextures RECORDBUTTON_TEXTURE = new ButtonTextures(
+        Identifier.of(SoundRecordingMod.MOD_ID, "mp4recordbutton"),
+        Identifier.of(SoundRecordingMod.MOD_ID, "mp4recordbutton_selected")
+    );
 
     public MP4PlayerScreen(MP4PlayerScreenHandler handler, PlayerInventory inventory, Text title){
         super(handler, inventory, title);
@@ -42,10 +49,12 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     }
 
     void recordButtonBuild(){
-        ButtonWidget buttonWidget = ButtonWidget.builder(Text.of("Start Recording"), (btn) -> {
+        TexturedButtonWidget buttonWidget = new TexturedButtonWidget(x + 55, y + 55, 13, 13, RECORDBUTTON_TEXTURE,
+                (btn) -> {
             this.client.interactionManager.clickButton(handler.syncId, 0);
             MinecraftClient.getInstance().setScreen(null);
-        }).dimensions(40, 40, 120, 20).build();
+        });
+
         this.addDrawableChild(buttonWidget);
     }
 

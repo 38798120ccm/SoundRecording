@@ -16,8 +16,10 @@ import java.util.ArrayList;
 public class ModPayloads {
     public static void initialize() {
         PayloadTypeRegistry.playC2S().register(ItemStackRecordC2SPayload.ID, ItemStackRecordC2SPayload.PACKET_CODEC);
+        PayloadTypeRegistry.playC2S().register(VolumeSliderC2SPayload.ID, VolumeSliderC2SPayload.PACKET_CODEC);
 
         RegisterItemStackRecordC2SPayload();
+        RegisterVolumeSliderC2SPayload();
     }
 
     static void RegisterItemStackRecordC2SPayload(){
@@ -30,6 +32,16 @@ public class ModPayloads {
                 sdStack.set(ModComponents.RECORDING_COMPONENT, recordSound2Component(
                         sdStack.get(ModComponents.RECORDING_COMPONENT), payload, payload.tick()));
                 mp4Stack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(sdStack));
+            });
+        });
+    }
+
+    static void RegisterVolumeSliderC2SPayload(){
+        ServerPlayNetworking.registerGlobalReceiver(VolumeSliderC2SPayload.ID, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayerEntity player = context.player();
+                ItemStack mp4Stack = player.getMainHandStack();
+                mp4Stack.set(ModComponents.VOLUME_COMPONENT, new VolumeComponent(payload.volume()));
             });
         });
     }
