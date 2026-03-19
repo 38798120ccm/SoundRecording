@@ -5,10 +5,8 @@ import net.minecraft.inventory.SimpleInventory;
 import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 
-import java.util.Iterator;
-
 public class MP4PlayerInventory extends SimpleInventory {
-    private ScreenHandler handler;
+    private final ScreenHandler handler;
 
     public MP4PlayerInventory(ScreenHandler handler, ItemStack item){
         super(1);

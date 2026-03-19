@@ -16,15 +16,12 @@ public class ModRecipeProvider extends FabricRecipeProvider {
         super(output, registriesFuture);
     }
 
-    public static void initialize() {
-    }
-
     @Override
     public void generate(RecipeExporter recipeExporter) {
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.MP4PLAYER, 1)
-                .pattern(" III ")
-                .pattern(" INI ")
-                .pattern(" ISI ")
+        ShapedRecipeJsonBuilder.create(RecipeCategory.TOOLS, ModItems.MP4PLAYER, 1)
+                .pattern("III")
+                .pattern("INI")
+                .pattern("ISI")
                 .input('I', Items.IRON_INGOT)
                 .input('N', Items.NOTE_BLOCK)
                 .input('S', Items.STONE_BUTTON)
@@ -32,19 +29,19 @@ public class ModRecipeProvider extends FabricRecipeProvider {
                 .offerTo(recipeExporter);
 
         ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModItems.MICROSD, 1)
-                .pattern(" GII ")
-                .pattern(" RG ")
-                .pattern("  ")
+                .pattern("GII")
+                .pattern("RG ")
+                .pattern("   ")
                 .input('I', Items.IRON_INGOT)
                 .input('R', Items.REDSTONE)
                 .input('G', Items.GOLD_INGOT)
                 .criterion(hasItem(Items.IRON_INGOT), conditionsFromItem(Items.IRON_INGOT))
                 .offerTo(recipeExporter);
 
-        ShapedRecipeJsonBuilder.create(RecipeCategory.MISC, ModBlocks.SPEAKER_BLOCK, 1)
-                .pattern(" ISI ")
-                .pattern(" INI ")
-                .pattern(" III ")
+        ShapedRecipeJsonBuilder.create(RecipeCategory.DECORATIONS, ModBlocks.SPEAKER_BLOCK, 1)
+                .pattern( "ISI")
+                .pattern("INI")
+                .pattern("III")
                 .input('I', Items.IRON_INGOT)
                 .input('N', Items.NOTE_BLOCK)
                 .input('S', Items.STONE_BUTTON)

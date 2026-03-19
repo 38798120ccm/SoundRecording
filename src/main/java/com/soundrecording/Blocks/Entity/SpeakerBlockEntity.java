@@ -6,8 +6,6 @@ import com.soundrecording.Componets.TickComponent;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.SoundInstance.DistancedSoundInstance;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
-import com.soundrecording.SoundRecordingMod;
-import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -27,6 +25,8 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
+
+import static com.soundrecording.Blocks.SpeakerBlock.POWERED;
 
 public class SpeakerBlockEntity extends BlockEntity implements ImplementedInventory {
     private final DefaultedList<ItemStack> inventory = DefaultedList.ofSize(1, ItemStack.EMPTY);
@@ -72,9 +72,9 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
     }
 
     public void tick(World world, BlockPos pos, BlockState state1) {
+        if(this.getCachedState().get(POWERED)) return;
         if (world.isClient){
             if(inventory.getFirst().isOf(ModItems.MICROSD)) {
-                SoundRecordingMod.LOGGER.info("ok");
                 TickComponent tc = inventory.get(0).get(ModComponents.TICK_COMPONENT);
                 if(tc.tick() == 0){return;}
                 if(tick <= tc.tick()){

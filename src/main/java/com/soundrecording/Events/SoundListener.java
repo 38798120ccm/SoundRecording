@@ -27,17 +27,17 @@ public class SoundListener implements SoundInstanceListener {
                 if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() != MP4PlayerStatus.Recording.ordinal()){continue;}
                 if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != MP4PlayerStatus.Loop.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
-                sendSoundPayloadC2S(sound, player, i, stack);
+                sendSoundPayloadC2S(sound, player, i, stack.get(ModComponents.TICK_COMPONENT).tick());
             }
         }
     }
 
-    void sendSoundPayloadC2S(SoundInstance sound, ClientPlayerEntity player, int slotId, ItemStack stack){
+    void sendSoundPayloadC2S(SoundInstance sound, ClientPlayerEntity player, int slotId, int tick){
         ItemStackRecordC2SPayload payload = new ItemStackRecordC2SPayload(
                 new SoundCodec(sound.getId(), sound.getSound().getIdentifier(), sound.getVolume(), sound.getPitch(),
                         sound.getSound().getRegistrationType().name(), sound.getSound().isStreamed(), sound.getSound().getAttenuation()),
                 new PositionCodec(sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
-                new DirectionCodec(player.getYaw(), player.getPitch()), slotId, stack.get(ModComponents.TICK_COMPONENT).tick());
+                new DirectionCodec(player.getYaw(), player.getPitch()), slotId, tick);
         ClientPlayNetworking.send(payload);
     }
 }

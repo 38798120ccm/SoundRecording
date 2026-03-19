@@ -1,10 +1,7 @@
 package com.soundrecording.Screens.Widgets;
 
 import com.soundrecording.Componets.ModComponents;
-import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Payload.TimelineSliderC2SPayload;
-import com.soundrecording.Payload.VolumeSliderC2SPayload;
-import com.soundrecording.Screens.MP4PlayerScreen;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
@@ -18,6 +15,8 @@ public class MP4TimelineSlider extends SliderWidget {
     private static final Identifier HANDLE_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4timeline_handler.png");
     ItemStack stack;
     int prestatus;
+    private long lastUpdateTime = 0;
+    private long delay = 200;
 
     public MP4TimelineSlider(int x, int y, int width, int height, Text text, double value, ItemStack stack) {
         super(x, y, width, height, text, value);
@@ -40,7 +39,6 @@ public class MP4TimelineSlider extends SliderWidget {
 
     @Override
     protected void applyValue() {
-
     }
 
     @Override
@@ -54,7 +52,6 @@ public class MP4TimelineSlider extends SliderWidget {
     public void onRelease(double mouseX, double mouseY){
         super.onRelease(mouseX, mouseY);
         ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 1));
-
     }
 
 }

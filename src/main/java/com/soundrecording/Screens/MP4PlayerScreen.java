@@ -135,11 +135,11 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
             if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
             ItemStack sdstack = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
             int size = sdstack.get(ModComponents.RECORDING_COMPONENT).size();
-            int length_min = sdstack.get(ModComponents.TICK_COMPONENT).tick()/120;
+            int length_min = sdstack.get(ModComponents.TICK_COMPONENT).tick()/1200;
             int length_sec = (sdstack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
             String length = String.format("%02d:%02d", length_min, length_sec);
 
-            int current_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/120;
+            int current_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/1200;
             int current_sec = (itemStack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
             String current = String.format("%02d:%02d", current_min, current_sec);
 

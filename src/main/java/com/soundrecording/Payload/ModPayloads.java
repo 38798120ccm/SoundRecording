@@ -5,7 +5,6 @@ import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Codecs.PositionCodec;
 import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.*;
-import com.soundrecording.Items.MP4Player.MP4Player;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Screens.MP4PlayerScreen;
@@ -14,7 +13,6 @@ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -51,8 +49,9 @@ public class ModPayloads {
     static void RegisterMP4ScreenItemStackS2CPayload(){
         ClientPlayNetworking.registerGlobalReceiver(MP4ScreenItemStackS2CPayload.ID, (payload, context) -> {
             context.client().execute(() -> {
+                int slotId = context.player().getInventory().selectedSlot;
                 if (context.client().currentScreen instanceof MP4PlayerScreen screen) {
-
+                    if(slotId != payload.slotId()) return;
                     if(payload.id() == 0){
                         screen.updateData(payload.stack());
                     }
@@ -69,8 +68,9 @@ public class ModPayloads {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
                 ItemStack mp4Stack = player.getMainHandStack();
+                int slotId = player.getInventory().selectedSlot;
                 mp4Stack.set(ModComponents.VOLUME_COMPONENT, new VolumeComponent(payload.volume()));
-                MP4ScreenItemStackS2CPayload payload2 = new MP4ScreenItemStackS2CPayload(mp4Stack, 1);
+                MP4ScreenItemStackS2CPayload payload2 = new MP4ScreenItemStackS2CPayload(mp4Stack, slotId, 1);
                 ServerPlayNetworking.send(player, payload2);
             });
         });
@@ -81,6 +81,7 @@ public class ModPayloads {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
                 ItemStack mp4Stack = player.getMainHandStack();
+                int slotId = player.getInventory().selectedSlot;
                 if(!mp4Stack.isOf(ModItems.MP4PLAYER)) return;
                 if(payload.id() == 0){
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), MP4PlayerStatus.PlayMode.ordinal()));
@@ -89,7 +90,7 @@ public class ModPayloads {
                     int maxtick = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
                     mp4Stack.set(ModComponents.TICK_COMPONENT, new TickComponent((int)Math.floor(maxtick * payload.percent())));
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(payload.prestatus(), MP4PlayerStatus.PlayMode.ordinal()));
-                    MP4ScreenItemStackS2CPayload payload2 = new MP4ScreenItemStackS2CPayload(mp4Stack, 0);
+                    MP4ScreenItemStackS2CPayload payload2 = new MP4ScreenItemStackS2CPayload(mp4Stack, slotId, 0);
                     ServerPlayNetworking.send(player, payload2);
                 }
             });

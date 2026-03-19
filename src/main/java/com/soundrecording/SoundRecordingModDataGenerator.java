@@ -1,6 +1,7 @@
 package com.soundrecording;
 
 import com.soundrecording.Blocks.BlockLootTableProvider;
+import com.soundrecording.Items.ModRecipeProvider;
 import net.fabricmc.fabric.api.datagen.v1.DataGeneratorEntrypoint;
 import net.fabricmc.fabric.api.datagen.v1.FabricDataGenerator;
 
@@ -10,5 +11,6 @@ public class SoundRecordingModDataGenerator implements DataGeneratorEntrypoint {
 		FabricDataGenerator.Pack pack = generator.createPack();
 
 		pack.addProvider(BlockLootTableProvider::new);
+		pack.addProvider(ModRecipeProvider::new);
 	}
 }

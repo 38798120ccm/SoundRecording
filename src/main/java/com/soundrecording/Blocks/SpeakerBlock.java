@@ -7,14 +7,13 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.BlockEntityTicker;
 import net.minecraft.block.entity.BlockEntityType;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.SidedInventory;
 import net.minecraft.item.ItemPlacementContext;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.state.StateManager;
+import net.minecraft.state.property.BooleanProperty;
 import net.minecraft.state.property.DirectionProperty;
-import net.minecraft.state.property.EnumProperty;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.Hand;
 import net.minecraft.util.ItemActionResult;
@@ -31,6 +30,7 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
     protected SpeakerBlock(Settings settings) {
         super(settings);
         setDefaultState(getStateManager().getDefaultState().with(FACING, Direction.NORTH));
+        setDefaultState(this.stateManager.getDefaultState().with(POWERED, false));
     }
 
     @Override
@@ -50,6 +50,7 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
             Block.createCuboidShape(2, 0, 4, 14, 7, 12);
 
     public static final DirectionProperty FACING = HorizontalFacingBlock.FACING;
+    public static final BooleanProperty POWERED = Properties.POWERED;
 
     @Override
     public VoxelShape getOutlineShape(BlockState state, BlockView world, BlockPos pos, ShapeContext context) {
@@ -64,6 +65,7 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
     @Override
     protected void appendProperties(StateManager.Builder<Block, BlockState> builder) {
         builder.add(FACING);
+        builder.add(POWERED);
     }
 
     @Override
@@ -105,6 +107,16 @@ public class SpeakerBlock extends BlockWithEntity implements BlockEntityProvider
             }
         }
         return ItemActionResult.SUCCESS;
+    }
+
+    @Override
+    protected void neighborUpdate(BlockState state, World world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+        if (!world.isClient) {
+            boolean isPowered = world.isReceivingRedstonePower(pos);
+            if (state.get(POWERED) != isPowered) {
+                world.setBlockState(pos, state.with(POWERED, isPowered), Block.NOTIFY_ALL);
+            }
+        }
     }
 
     @Nullable

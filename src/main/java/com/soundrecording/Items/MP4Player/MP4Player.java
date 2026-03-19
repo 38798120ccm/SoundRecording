@@ -24,7 +24,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
-
 import java.util.Collections;
 import java.util.List;
 
@@ -98,7 +97,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                 stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
             }
             else if(statusComponent.recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
-                if(tickComponent.tick() >= stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
+                if(tickComponent.tick() > stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
                     stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
                 }
                 else {
@@ -109,7 +108,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                     if(entity instanceof ServerPlayerEntity serverPlayer){
                         if (serverPlayer.currentScreenHandler instanceof MP4PlayerScreenHandler handler){
                             if (world.getTime() % 10 == 0) {
-                                MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(stack, 0);
+                                MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(stack, slot, 0);
                                 ServerPlayNetworking.send(serverPlayer, payload);
                             }
                         }
