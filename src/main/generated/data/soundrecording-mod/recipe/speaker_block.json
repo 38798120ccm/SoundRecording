@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "N": {
+      "item": "minecraft:note_block"
+    },
+    "S": {
+      "item": "minecraft:stone_button"
+    }
+  },
+  "pattern": [
+    "ISI",
+    "INI",
+    "III"
+  ],
+  "result": {
+    "count": 1,
+    "id": "soundrecording-mod:speaker_block"
+  }
+}
