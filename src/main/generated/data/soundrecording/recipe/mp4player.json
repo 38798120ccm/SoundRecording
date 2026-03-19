@@ -1,6 +1,6 @@
 {
   "type": "minecraft:crafting_shaped",
-  "category": "misc",
+  "category": "equipment",
   "key": {
     "I": {
       "item": "minecraft:iron_ingot"
@@ -13,12 +13,12 @@
     }
   },
   "pattern": [
-    "ISI",
+    "III",
     "INI",
-    "III"
+    "ISI"
   ],
   "result": {
     "count": 1,
-    "id": "soundrecording-mod:speaker_block"
+    "id": "soundrecording:mp4player"
   }
 }

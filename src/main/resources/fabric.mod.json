@@ -1,18 +1,18 @@
 {
 	"schemaVersion": 1,
-	"id": "soundrecording-mod",
-	"version": "${version}",
+	"id": "soundrecording",
+	"version": "-Fabric-1.21.1${version}",
 	"name": "SoundRecording Mod",
-	"description": "This is an example description! Tell everyone what your mod is about!",
+	"description": "Record the sound around you and play it :D.",
 	"authors": [
-		"Me!"
+		"38798120ccm"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/FabricMC/fabric-example-mod"
+		"sources": "https://github.com/38798120ccm/SoundRecording"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/soundrecording-mod/icon.png",
+	"license": "MIT License",
+	"icon": "assets/soundrecording/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
@@ -26,7 +26,7 @@
 		]
 	},
 	"mixins": [
-		"soundrecording-mod.mixins.json"
+		"soundrecording.mixins.json"
 	],
 	"depends": {
 		"fabricloader": ">=0.18.4",

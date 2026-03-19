@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "soundrecording-mod:speaker_block"
+        "recipe": "soundrecording:speaker_block"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "soundrecording-mod:speaker_block"
+      "soundrecording:speaker_block"
     ]
   }
 }

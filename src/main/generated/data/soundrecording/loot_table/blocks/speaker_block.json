@@ -11,7 +11,7 @@
       "entries": [
         {
           "type": "minecraft:item",
-          "name": "soundrecording-mod:speaker_block"
+          "name": "soundrecording:speaker_block"
         }
       ],
       "rolls": 1.0

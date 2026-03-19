@@ -1,6 +1,6 @@
 {
   "parent": "minecraft:item/generated",
   "textures": {
-    "layer0": "soundrecording-mod:item/mp4player"
+    "layer0": "soundrecording:item/mp4player"
   }
 }

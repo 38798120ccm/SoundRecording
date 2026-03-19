@@ -1,7 +1,7 @@
-// 1.21.1	2026-03-16T14:50:47.897227395	SoundRecording Mod/Recipes
-c65c3e1170c90b400db6000a953bfddba6ab67b6 data/soundrecording-mod/recipe/speaker_block.json
-ffc2dbb168f4cfb1c819d8cfb38d35c0d46ed522 data/soundrecording-mod/recipe/mp4player.json
-3adbe5419681a3463487cfc74dc70d4b25b26791 data/soundrecording-mod/advancement/recipes/misc/microsd.json
-03d7f196144f92cc8333d3977d15a3f6d5900187 data/soundrecording-mod/advancement/recipes/decorations/speaker_block.json
-71e278eb89e891bb7b359a83df416501d2bec114 data/soundrecording-mod/advancement/recipes/tools/mp4player.json
-4a63708954e6b30bc91d7b46132832b0a75d6949 data/soundrecording-mod/recipe/microsd.json
+// 1.21.1	2026-03-20T02:34:22.080107498	SoundRecording Mod/Recipes
+06172f7e01e1408d53f74bf484e46ed1ad5d9094 data/soundrecording/advancement/recipes/tools/mp4player.json
+8962f84c59f2b6421a3462d3331b4a9cc46b03f3 data/soundrecording/recipe/speaker_block.json
+70f4cf9e4d2ac6396a2d7759d79e7e7242772913 data/soundrecording/recipe/microsd.json
+ada09654ded8c87ed3a2858e72f109f2862cca7d data/soundrecording/recipe/mp4player.json
+2084627a08e606c52e4e63e891991f5e575ed885 data/soundrecording/advancement/recipes/decorations/speaker_block.json
+939ec59dac7fd5603d74b230f4727b3b73457d77 data/soundrecording/advancement/recipes/misc/microsd.json

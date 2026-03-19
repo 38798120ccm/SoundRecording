@@ -13,7 +13,7 @@
     },
     "has_the_recipe": {
       "conditions": {
-        "recipe": "soundrecording-mod:microsd"
+        "recipe": "soundrecording:microsd"
       },
       "trigger": "minecraft:recipe_unlocked"
     }
@@ -26,7 +26,7 @@
   ],
   "rewards": {
     "recipes": [
-      "soundrecording-mod:microsd"
+      "soundrecording:microsd"
     ]
   }
 }

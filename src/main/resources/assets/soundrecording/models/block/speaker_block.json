@@ -3,7 +3,7 @@
 	"credit": "Made with Blockbench",
 	"ambientocclusion": true,
 	"textures": {
-		"1": "soundrecording-mod:block/speaker_block",
+		"1": "soundrecording:block/speaker_block",
 		"particle": "#1"
 	},
 	"elements": [
