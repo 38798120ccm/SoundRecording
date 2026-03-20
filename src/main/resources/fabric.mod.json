@@ -1,7 +1,7 @@
 {
 	"schemaVersion": 1,
 	"id": "soundrecording",
-	"version": "-Fabric-1.21.1${version}",
+	"version": "${version}",
 	"name": "SoundRecording Mod",
 	"description": "Record the sound around you and play it :D.",
 	"authors": [

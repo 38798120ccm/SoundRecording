@@ -16,7 +16,7 @@ public class ModItemGroups {
     public static final RegistryKey<ItemGroup> SOUND_RECORDING_ITEM_GROUP_KEY = RegistryKey.of(Registries.ITEM_GROUP.getKey(), Identifier.of(SoundRecordingMod.MOD_ID, "item_group"));
     public static final ItemGroup SOUND_RECORDING_ITEM_GROUP = FabricItemGroup.builder()
             .icon(() -> new ItemStack(ModItems.MP4PLAYER))
-            .displayName(Text.translatable("itemGroup.soundrecording-mod"))
+            .displayName(Text.translatable("itemGroup.soundrecording"))
             .build();
 
     public static void initialize() {

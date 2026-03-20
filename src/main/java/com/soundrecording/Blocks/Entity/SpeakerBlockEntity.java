@@ -6,6 +6,8 @@ import com.soundrecording.Componets.TickComponent;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.SoundInstance.DistancedSoundInstance;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
@@ -94,6 +96,7 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
         }
     }
 
+    @Environment(EnvType.CLIENT)
     void playPlayerAroundSound(World world, RecordingComponent rc, int tick, BlockPos pos){
         if(world.isClient) {
             MinecraftClient client = MinecraftClient.getInstance();
@@ -112,6 +115,7 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
         }
     }
 
+    @Environment(EnvType.CLIENT)
     void playDistanceSound(World world, RecordingComponent rc, int tick, BlockPos pos){
         if(world.isClient){
             MinecraftClient client = MinecraftClient.getInstance();

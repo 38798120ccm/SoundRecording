@@ -1,10 +1,7 @@
 {
   "itemGroup.soundrecording": "Sound Recording Mod",
-  "item.soundrecording.mp4player": "Mp4Player",
+  "item.soundrecording.mp4player": "MP4Player",
   "item.soundrecording.microsd": "MicroSD",
 
-  "block.soundrecording.speaker_block": "Speaker",
-
-  "soundrecording.tick": "Tick: %1$s"
-
+  "block.soundrecording.speaker_block": "Speaker"
 }

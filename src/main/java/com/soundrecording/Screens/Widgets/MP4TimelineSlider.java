@@ -15,8 +15,6 @@ public class MP4TimelineSlider extends SliderWidget {
     private static final Identifier HANDLE_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4timeline_handler.png");
     ItemStack stack;
     int prestatus;
-    private long lastUpdateTime = 0;
-    private long delay = 200;
 
     public MP4TimelineSlider(int x, int y, int width, int height, Text text, double value, ItemStack stack) {
         super(x, y, width, height, text, value);
@@ -26,7 +24,7 @@ public class MP4TimelineSlider extends SliderWidget {
 
     @Override
     public void renderWidget(DrawContext context, int mouseX, int mouseY, float delta) {
-        context.drawTexture(SLIDER_TEXTURE, this.getX(), this.getY(), 0, 0, this.width, this.height, 124, 12);
+        context.drawTexture(SLIDER_TEXTURE, this.getX(), this.getY(), 0, 0, this.width, this.height, 144, 12);
 
         int handleX = this.getX() + (int)(this.value * (double)(this.width - 8));
         context.drawTexture(HANDLE_TEXTURE, handleX, this.getY(), 0, 0, 8, this.height, 8, 12);

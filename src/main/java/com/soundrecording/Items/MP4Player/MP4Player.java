@@ -5,6 +5,8 @@ import com.soundrecording.Componets.*;
 import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
 import com.soundrecording.Screens.MP4PlayerScreenHandler;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.MinecraftClient;
@@ -140,6 +142,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         return false;
     }
 
+    @Environment(EnvType.CLIENT)
     void playTickSound(World world, ItemStack stack, int tick){
         if(world.isClient){
             boolean issoundaround = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround();

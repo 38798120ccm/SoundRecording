@@ -8,6 +8,8 @@ import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Screens.MP4PlayerScreen;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -19,15 +21,20 @@ import java.util.Collections;
 import java.util.List;
 
 public class ModPayloads {
-    public static void initialize() {
+    public static void initializeServer() {
         PayloadTypeRegistry.playC2S().register(ItemStackRecordC2SPayload.ID, ItemStackRecordC2SPayload.PACKET_CODEC);
         PayloadTypeRegistry.playC2S().register(VolumeSliderC2SPayload.ID, VolumeSliderC2SPayload.PACKET_CODEC);
         PayloadTypeRegistry.playC2S().register(TimelineSliderC2SPayload.ID, TimelineSliderC2SPayload.PACKET_CODEC);
-        PayloadTypeRegistry.playS2C().register(MP4ScreenItemStackS2CPayload.ID, MP4ScreenItemStackS2CPayload.PACKET_CODEC);
 
         RegisterItemStackRecordC2SPayload();
         RegisterVolumeSliderC2SPayload();
         RegisterTimelineSliderC2SPayload();
+
+    }
+
+    public static void initializeClient(){
+        PayloadTypeRegistry.playS2C().register(MP4ScreenItemStackS2CPayload.ID, MP4ScreenItemStackS2CPayload.PACKET_CODEC);
+
         RegisterMP4ScreenItemStackS2CPayload();
     }
 
@@ -42,23 +49,6 @@ public class ModPayloads {
                         sdStack.get(ModComponents.RECORDING_COMPONENT), payload, payload.tick()));
                 mp4Stack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(sdStack));
                 sdStack.set(ModComponents.TICK_COMPONENT, new TickComponent(payload.tick()));
-            });
-        });
-    }
-
-    static void RegisterMP4ScreenItemStackS2CPayload(){
-        ClientPlayNetworking.registerGlobalReceiver(MP4ScreenItemStackS2CPayload.ID, (payload, context) -> {
-            context.client().execute(() -> {
-                int slotId = context.player().getInventory().selectedSlot;
-                if (context.client().currentScreen instanceof MP4PlayerScreen screen) {
-                    if(slotId != payload.slotId()) return;
-                    if(payload.id() == 0){
-                        screen.updateData(payload.stack());
-                    }
-                    else if(payload.id() == 1){
-                        screen.updateVolume(payload.stack());
-                    }
-                }
             });
         });
     }
@@ -92,6 +82,24 @@ public class ModPayloads {
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(payload.prestatus(), MP4PlayerStatus.PlayMode.ordinal()));
                     MP4ScreenItemStackS2CPayload payload2 = new MP4ScreenItemStackS2CPayload(mp4Stack, slotId, 0);
                     ServerPlayNetworking.send(player, payload2);
+                }
+            });
+        });
+    }
+
+    @Environment(EnvType.CLIENT)
+    static void RegisterMP4ScreenItemStackS2CPayload(){
+        ClientPlayNetworking.registerGlobalReceiver(MP4ScreenItemStackS2CPayload.ID, (payload, context) -> {
+            context.client().execute(() -> {
+                int slotId = context.player().getInventory().selectedSlot;
+                if (context.client().currentScreen instanceof MP4PlayerScreen screen) {
+                    if(slotId != payload.slotId()) return;
+                    if(payload.id() == 0){
+                        screen.updateData(payload.stack(), 0);
+                    }
+                    else if(payload.id() == 1){
+                        screen.updateVolume(payload.stack());
+                    }
                 }
             });
         });

@@ -65,6 +65,12 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     );
 
     MP4TimelineSlider timelineSlider;
+    MP4Button recordbutton;
+    MP4Button playbutton;
+    MP4Button soundaroundbutton;
+    TexturedButtonWidget ffb;
+    TexturedButtonWidget fbb;
+
     ItemStack itemStack;
 
 
@@ -83,14 +89,13 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
             @Override
             public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
         });
-
-        recordButtonBuild();
-        playButtonBuild();
-        timelineSliderBuild();
+        buildButtons();
         volumeSliderBuild();
-        soundaroundButtonBuild();
-        FFBBuild();
-        FBBBuild();
+    }
+
+    @Override
+    protected void drawForeground(DrawContext context, int mouseX, int mouseY) {
+        context.drawText(this.textRenderer, this.title, this.titleX, this.titleY, 4210752, false);
     }
 
     @Override
@@ -172,11 +177,11 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         }
     }
 
-    public void updateData(ItemStack stack){
+    public void updateData(ItemStack stack, int id){
         this.itemStack = stack;
-        if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()){
+        if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty() || id == 0){
             this.client.execute(() -> {
-                clearAndInit();
+                buildButtons();
             });
         }
         else {
@@ -190,9 +195,19 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         this.itemStack = stack;
     }
 
+    void buildButtons(){
+        recordButtonBuild();
+        playButtonBuild();
+        timelineSliderBuild();
+        soundaroundButtonBuild();
+        FFBBuild();
+        FBBBuild();
+    }
+
     void recordButtonBuild(){
+        remove(recordbutton);
         int id = (itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal())? 0: 1;
-        MP4Button recordbutton = new MP4Button(x + 54, y + 55, 13, 13,
+        recordbutton = new MP4Button(x + 54, y + 55, 13, 13,
                 RECORDBUTTON_TEXTURE, STOPRECORDBUTTON_TEXTURE, id, (btn) -> {
             if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 1);
@@ -207,8 +222,9 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     }
 
     void playButtonBuild(){
+        remove(playbutton);
         int id = itemStack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()? 0: 1;
-        MP4Button playbutton = new MP4Button(x + 28, y + 55, 13, 13,
+        playbutton = new MP4Button(x + 28, y + 55, 13, 13,
                 PLAYBUTTON_TEXTURE, STOPBUTTON_TEXTURE, id, (btn) -> {
             if(itemStack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 11);
@@ -223,8 +239,9 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     }
 
     void soundaroundButtonBuild(){
+        remove(soundaroundbutton);
         int id = itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()? 0: 1;
-        MP4Button soundaroundbutton = new MP4Button(x + 67, y + 55, 13, 13,
+        soundaroundbutton = new MP4Button(x + 67, y + 55, 13, 13,
                 SOUNDAROUNDBUTTON_TEXTURE, NOSOUNDAROUNDBUTTON_TEXTURE, id, (btn) -> {
                 if(itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
                     this.client.interactionManager.clickButton(handler.syncId, 20);
@@ -239,7 +256,8 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     }
 
     void FBBBuild(){
-        TexturedButtonWidget ffb = new TexturedButtonWidget(x + 15, y + 55, 13, 13,
+        remove(ffb);
+        ffb = new TexturedButtonWidget(x + 15, y + 55, 13, 13,
                 FBB_TEXTURE, (btn) -> {
             this.client.interactionManager.clickButton(handler.syncId, 31);
         });
@@ -247,7 +265,8 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     }
 
     void FFBBuild(){
-        TexturedButtonWidget fbb = new TexturedButtonWidget(x + 41, y + 55, 13, 13,
+        remove(fbb);
+        fbb = new TexturedButtonWidget(x + 41, y + 55, 13, 13,
                 FFB_TEXTURE, (btn) -> {
             this.client.interactionManager.clickButton(handler.syncId, 30);
         });
@@ -260,7 +279,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         if(itemStack.isEmpty() || itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
         int tick = itemStack.get(ModComponents.TICK_COMPONENT).tick();
         int maxtick = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
-        timelineSlider = new MP4TimelineSlider(x + 36, y + 70,124, 12, Text.literal(""),
+        timelineSlider = new MP4TimelineSlider(x + 15, y + 70,144, 12, Text.literal(""),
                  (double) tick/maxtick, itemStack);
         if(timelineSlider != null)
             this.addDrawableChild(timelineSlider);

@@ -10,7 +10,6 @@ public class ModEvents {
 
     public static void initialize(){
         SoundRecordingMod.LOGGER.info("Adding listeners");
-
         addSoundListenerListener();
     }
 

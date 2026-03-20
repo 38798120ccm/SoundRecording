@@ -33,8 +33,7 @@ public class SoundRecordingMod implements ModInitializer {
 		ModBlockEntities.initialize();
 		ModItemGroups.initialize();
 		ModScreenHandler.initialize();
-		ModEvents.initialize();
-		ModPayloads.initialize();
+		ModPayloads.initializeServer();
 
 		LOGGER.info("Hello Fabric world!");
 	}
