@@ -2,7 +2,7 @@ package com.soundrecording;
 
 import com.soundrecording.Events.ModEvents;
 import com.soundrecording.Payload.ModPayloads;
-import com.soundrecording.Screens.MP4PlayerScreen;
+import com.soundrecording.Screens.MP4Player.MP4PlayerScreen;
 import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.api.ClientModInitializer;
 import net.minecraft.client.gui.screen.ingame.HandledScreens;

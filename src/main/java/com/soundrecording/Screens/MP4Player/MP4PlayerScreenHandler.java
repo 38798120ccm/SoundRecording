@@ -1,4 +1,4 @@
-package com.soundrecording.Screens;
+package com.soundrecording.Screens.MP4Player;
 
 import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Componets.*;
@@ -6,6 +6,7 @@ import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
 import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
+import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -74,6 +75,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
     }
 
     public void stopRecordingState(){
+        itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().set(ModComponents.TICK_COMPONENT, new TickComponent(itemStack.get(ModComponents.TICK_COMPONENT).tick()));
         itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
         itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(),MP4PlayerStatus.PlayMode.ordinal()));
     }
@@ -96,6 +98,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
                 break;
             case 11:
                 if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT).size() <= 0) break;
                 int status2 = itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus();
                 itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Loop.ordinal(), status2));
                 break;
@@ -107,21 +110,31 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
                 break;
             case 30:
                 if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
-                int newtick = Math.min(itemStack.get(ModComponents.TICK_COMPONENT).tick() + 100,
+                int newtick30 = Math.min(itemStack.get(ModComponents.TICK_COMPONENT).tick() + 10,
                         itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick());
-                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick));
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick30));
                 break;
             case 31:
                 if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
-                int newtick2 = Math.max(itemStack.get(ModComponents.TICK_COMPONENT).tick() - 100, 0);
-                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick2));
+                int newtick31 = Math.max(itemStack.get(ModComponents.TICK_COMPONENT).tick() - 10, 0);
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick31));
+                break;
+            case 40:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int maxtick40 = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+                int newtick40 = Math.min(itemStack.get(ModComponents.TICK_COMPONENT).tick() + (int)(maxtick40*0.2), maxtick40);
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick40));
+                break;
+            case 41:
+                if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) break;
+                int maxtick41 = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+                int newtick41 = Math.max(itemStack.get(ModComponents.TICK_COMPONENT).tick() - (int)(maxtick41*0.2), 0);
+                itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(newtick41));
                 break;
         }
-        if (!player.getWorld().isClient) {
-            int slotid = player.getInventory().selectedSlot;
-            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) player;
-            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, slotid, 0);
-            ServerPlayNetworking.send(serverPlayer, payload);
+        if(!player.getWorld().isClient){
+            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, player.getInventory().selectedSlot);
+            ServerPlayNetworking.send((ServerPlayerEntity)player, payload);
         }
         sendContentUpdates();
         return super.onButtonClick(player, id);
@@ -150,13 +163,13 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
         itemStack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(mp4PlayerInventory.getStack(0)));
         itemStack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), MP4PlayerStatus.PlayMode.ordinal()));
         itemStack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
-        if (!this.playerInventory.player.getWorld().isClient) {
-            int slotid = this.playerInventory.player.getInventory().selectedSlot;
-            ServerPlayerEntity serverPlayer = (ServerPlayerEntity) this.playerInventory.player;
-            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, slotid, 0);
-            ServerPlayNetworking.send(serverPlayer, payload);
-        }
+
+//        if(!playerInventory.player.getWorld().isClient){
+//            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(itemStack, playerInventory.player.);
+//            ServerPlayNetworking.send((ServerPlayerEntity)playerInventory.player, payload);
+//        }
     }
+
 
     @Override
     public void onPropertyUpdate(ScreenHandler handler, int property, int value) {

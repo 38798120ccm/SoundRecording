@@ -30,7 +30,7 @@ public class PlayerFollowingSoundInstance extends MovingSoundInstance {
         this.issoundaround = issoundaround;
         this.sound = new Sound(soundCodec.soundIdentifier(), (random) -> 1.0f, (random) -> 1.0f, 1,
                 Sound.RegistrationType.getByName(soundCodec.registrationType()),
-                soundCodec.stream(), false, soundCodec.attenuation());
+                soundCodec.stream(), true, soundCodec.attenuation());
         this.setPositionToEntity();
     }
 

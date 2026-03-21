@@ -1,6 +1,5 @@
-package com.soundrecording.Screens.Widgets;
+package com.soundrecording.Screens.MP4Player;
 
-import com.soundrecording.Payload.TimelineSliderC2SPayload;
 import com.soundrecording.Payload.VolumeSliderC2SPayload;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;

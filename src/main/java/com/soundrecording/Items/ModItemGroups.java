@@ -25,7 +25,7 @@ public class ModItemGroups {
         ItemGroupEvents.modifyEntriesEvent(SOUND_RECORDING_ITEM_GROUP_KEY).register(itemGroup -> {
             itemGroup.add(ModItems.MP4PLAYER);
             itemGroup.add(ModItems.MICROSD);
-
+//            itemGroup.add(ModItems.SOUNDEFFECTBOOK);
         });
 
         ItemGroupEvents.modifyEntriesEvent(SOUND_RECORDING_ITEM_GROUP_KEY).register(entries -> {

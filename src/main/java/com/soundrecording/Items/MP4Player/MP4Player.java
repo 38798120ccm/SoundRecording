@@ -3,7 +3,7 @@ package com.soundrecording.Items.MP4Player;
 import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Componets.*;
 import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
-import com.soundrecording.Screens.MP4PlayerScreenHandler;
+import com.soundrecording.Screens.MP4Player.MP4PlayerScreenHandler;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -24,6 +24,7 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Formatting;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
+import net.minecraft.util.UseAction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import java.util.Collections;
@@ -54,9 +55,10 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         }
 
         if(stack.contains(ModComponents.TICK_COMPONENT)) {
-            int current_min = stack.get(ModComponents.TICK_COMPONENT).tick()/120;
+            int current_hr =  stack.get(ModComponents.TICK_COMPONENT).tick()/72000;
+            int current_min = stack.get(ModComponents.TICK_COMPONENT).tick()/1200;
             int current_sec = (stack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
-            String current = String.format("%02d:%02d", current_min, current_sec);
+            String current = String.format("%02d:%02d:%02d", current_hr, current_min, current_sec);
             tooltip.add(Text.literal("Current: " + current).formatted(Formatting.GOLD));
         }
     }
@@ -80,7 +82,7 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                 }
             }
         }
-        return TypedActionResult.pass(user.getStackInHand(hand));
+        return TypedActionResult.consume(user.getStackInHand(hand));
     }
 
     @Override
@@ -109,15 +111,18 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
                     if(world.isClient) return;
                     if(entity instanceof ServerPlayerEntity serverPlayer){
                         if (serverPlayer.currentScreenHandler instanceof MP4PlayerScreenHandler handler){
-                            if (world.getTime() % 10 == 0) {
-                                MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(stack, slot, 0);
-                                ServerPlayNetworking.send(serverPlayer, payload);
-                            }
+                            MP4ScreenItemStackS2CPayload payload = new MP4ScreenItemStackS2CPayload(stack, slot);
+                            ServerPlayNetworking.send(serverPlayer, payload);
                         }
                     }
                 }
             }
         }
+    }
+
+    @Override
+    public UseAction getUseAction(ItemStack stack) {
+        return UseAction.BRUSH;
     }
 
     @Override

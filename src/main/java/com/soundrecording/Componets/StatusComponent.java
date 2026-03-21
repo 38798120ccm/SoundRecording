@@ -2,6 +2,9 @@ package com.soundrecording.Componets;
 
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.soundrecording.Codecs.SoundCodec;
+
+import java.util.List;
 
 public record StatusComponent(int playstatus, int recordstatus) {
     public static final Codec<StatusComponent> CODEC = RecordCodecBuilder.create(builder ->

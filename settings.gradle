@@ -1,6 +1,7 @@
 pluginManagement {
 	repositories {
 		maven {
+			rootProject.name = 'soundrecording-fabric-1.21.1'
 			name = 'Fabric'
 			url = 'https://maven.fabricmc.net/'
 		}

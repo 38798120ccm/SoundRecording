@@ -1,17 +1,16 @@
-package com.soundrecording.Screens;
+package com.soundrecording.Screens.MP4Player;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
-import com.soundrecording.Screens.Widgets.MP4Button;
-import com.soundrecording.Screens.Widgets.MP4TimelineSlider;
-import com.soundrecording.Screens.Widgets.MP4VolumeSlider;
+import com.soundrecording.Items.ModItems;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.render.GameRenderer;
 import net.minecraft.entity.player.PlayerInventory;
 import net.minecraft.item.ItemStack;
@@ -19,6 +18,7 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
+import org.lwjgl.glfw.GLFW;
 
 public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     public static Identifier GUI_TEXTURE =
@@ -70,7 +70,6 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     MP4Button soundaroundbutton;
     TexturedButtonWidget ffb;
     TexturedButtonWidget fbb;
-
     ItemStack itemStack;
 
 
@@ -85,12 +84,14 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         this.handler.addListener(new ScreenHandlerListener() {
             @Override
             public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+                itemStack = ((MP4PlayerScreenHandler) handler).itemStack;
+                buildButtons();
             }
             @Override
             public void onPropertyUpdate(ScreenHandler handler, int property, int value) {}
         });
         buildButtons();
-        volumeSliderBuild();
+        volumeSliderBuild(itemStack);
     }
 
     @Override
@@ -115,7 +116,15 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         }
 
         String mode;
+        int duration_hr;
+        int duration_min;
+        int duration_sec;
+        ItemStack sdstack = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
         if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()){
+            duration_hr = itemStack.get(ModComponents.TICK_COMPONENT).tick()/72000;
+            duration_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/1200;
+            duration_sec = (itemStack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+
             mode = MP4PlayerStatus.fromInt(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus()).name();
             context.drawText(
                     this.textRenderer,
@@ -138,33 +147,14 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
             );
 
             if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
-            ItemStack sdstack = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
-            int size = sdstack.get(ModComponents.RECORDING_COMPONENT).size();
-            int length_min = sdstack.get(ModComponents.TICK_COMPONENT).tick()/1200;
-            int length_sec = (sdstack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
-            String length = String.format("%02d:%02d", length_min, length_sec);
+            duration_hr =  sdstack.get(ModComponents.TICK_COMPONENT).tick()/72000;
+            duration_min = sdstack.get(ModComponents.TICK_COMPONENT).tick()/1200;
+            duration_sec = (sdstack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
 
+            int current_hr =  itemStack.get(ModComponents.TICK_COMPONENT).tick()/72000;
             int current_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/1200;
             int current_sec = (itemStack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
-            String current = String.format("%02d:%02d", current_min, current_sec);
-
-            context.drawText(
-                    this.textRenderer,
-                    Text.literal("Sound Count: " + size),
-                    x + 85,
-                    y + 30,
-                    0x373737,
-                    false
-            );
-
-            context.drawText(
-                    this.textRenderer,
-                    Text.literal("Length: " + length),
-                    x + 85,
-                    y + 45,
-                    0x373737,
-                    false
-            );
+            String current = String.format("%02d:%02d:%02d", current_hr, current_min, current_sec);
 
             context.drawText(
                     this.textRenderer,
@@ -175,45 +165,79 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
                     false
             );
         }
+        if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
+        int size = sdstack.get(ModComponents.RECORDING_COMPONENT).size();
+
+        String duration = String.format("%02d:%02d:%02d", duration_hr, duration_min, duration_sec);
+
+        context.drawText(
+                this.textRenderer,
+                Text.literal("Sound Count: " + size),
+                x + 85,
+                y + 30,
+                0x373737,
+                false
+        );
+
+        context.drawText(
+                this.textRenderer,
+                Text.literal("Duration: " + duration),
+                x + 85,
+                y + 45,
+                0x373737,
+                false
+        );
     }
 
-    public void updateData(ItemStack stack, int id){
-        this.itemStack = stack;
-        if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty() || id == 0){
-            this.client.execute(() -> {
-                buildButtons();
-            });
-        }
-        else {
-            this.client.execute(() -> {
-                this.timelineSliderBuild();
-            });
+    @Override
+    protected void handledScreenTick() {
+        ClientPlayerEntity player = this.client.player;
+        if(player == null) return;
+        ItemStack stack = player.getMainHandStack();
+        if(stack.isOf(ModItems.MP4PLAYER)){
+            updateDataTick(stack);
         }
     }
 
-    public void updateVolume(ItemStack stack){
+    public void updateDataTick(ItemStack stack){
+        if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() != itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus()){
+            recordButtonBuild(stack);
+            timelineSliderBuild(stack);
+        }
+        if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != itemStack.get(ModComponents.STATUS_COMPONENT).playstatus()){
+            playButtonBuild(stack);
+        }
+        if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround() != itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
+            soundaroundButtonBuild(stack);
+        }
         this.itemStack = stack;
+    }
+
+    public void updateData(ItemStack stack){
+        if(timelineSlider != null) {
+            timelineSlider.adjustValue(stack);
+        }
     }
 
     void buildButtons(){
-        recordButtonBuild();
-        playButtonBuild();
-        timelineSliderBuild();
-        soundaroundButtonBuild();
+        recordButtonBuild(itemStack);
+        playButtonBuild(itemStack);
+        timelineSliderBuild(itemStack);
+        soundaroundButtonBuild(itemStack);
         FFBBuild();
         FBBBuild();
     }
 
-    void recordButtonBuild(){
+    void recordButtonBuild(ItemStack stack){
         remove(recordbutton);
-        int id = (itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal())? 0: 1;
+        int id = (stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal())? 0: 1;
         recordbutton = new MP4Button(x + 54, y + 55, 13, 13,
                 RECORDBUTTON_TEXTURE, STOPRECORDBUTTON_TEXTURE, id, (btn) -> {
-            if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
+            if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 1);
                 MinecraftClient.getInstance().setScreen(null);
             }
-            else if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()){
+            else if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 0);
                 ((MP4Button)btn).switchTexture(0);
             }
@@ -221,73 +245,97 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         this.addDrawableChild(recordbutton);
     }
 
-    void playButtonBuild(){
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() != MP4PlayerStatus.Recording.ordinal()){
+            if(keyCode == GLFW.GLFW_KEY_SPACE){
+                playButtonFunction(itemStack);
+                System.out.println("space");
+                return true;
+            }
+            else if(keyCode == GLFW.GLFW_KEY_LEFT){
+                this.client.interactionManager.clickButton(handler.syncId, 31);
+                return true;
+            }
+            else if(keyCode == GLFW.GLFW_KEY_RIGHT){
+                this.client.interactionManager.clickButton(handler.syncId, 30);
+                return true;
+            }
+        }
+        return super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    void playButtonBuild(ItemStack stack){
         remove(playbutton);
-        int id = itemStack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()? 0: 1;
+        int id = stack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()? 0: 1;
         playbutton = new MP4Button(x + 28, y + 55, 13, 13,
                 PLAYBUTTON_TEXTURE, STOPBUTTON_TEXTURE, id, (btn) -> {
-            if(itemStack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()){
-                this.client.interactionManager.clickButton(handler.syncId, 11);
-                ((MP4Button)btn).switchTexture(1);
-            }
-            else if(itemStack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Loop.ordinal()){
-                this.client.interactionManager.clickButton(handler.syncId, 10);
-                ((MP4Button)btn).switchTexture(0);
-            }
+            playButtonFunction(stack);
         });
         this.addDrawableChild(playbutton);
     }
 
-    void soundaroundButtonBuild(){
+    void playButtonFunction(ItemStack stack){
+        if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()){
+            this.client.interactionManager.clickButton(handler.syncId, 11);
+        }
+        else if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Loop.ordinal()){
+            this.client.interactionManager.clickButton(handler.syncId, 10);
+        }
+    }
+
+    void soundaroundButtonBuild(ItemStack stack){
         remove(soundaroundbutton);
-        int id = itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()? 0: 1;
+        int id = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()? 0: 1;
         soundaroundbutton = new MP4Button(x + 67, y + 55, 13, 13,
                 SOUNDAROUNDBUTTON_TEXTURE, NOSOUNDAROUNDBUTTON_TEXTURE, id, (btn) -> {
-                if(itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
+                if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
                     this.client.interactionManager.clickButton(handler.syncId, 20);
-                    ((MP4Button)btn).switchTexture(1);
                 }
                 else {
                     this.client.interactionManager.clickButton(handler.syncId, 21);
-                    ((MP4Button)btn).switchTexture(0);
                 }
             });
         this.addDrawableChild(soundaroundbutton);
-    }
-
-    void FBBBuild(){
-        remove(ffb);
-        ffb = new TexturedButtonWidget(x + 15, y + 55, 13, 13,
-                FBB_TEXTURE, (btn) -> {
-            this.client.interactionManager.clickButton(handler.syncId, 31);
-        });
-        this.addDrawableChild(ffb);
     }
 
     void FFBBuild(){
         remove(fbb);
         fbb = new TexturedButtonWidget(x + 41, y + 55, 13, 13,
                 FFB_TEXTURE, (btn) -> {
-            this.client.interactionManager.clickButton(handler.syncId, 30);
+            this.client.interactionManager.clickButton(handler.syncId, 40);
+            FFBBuild();
         });
         this.addDrawableChild(fbb);
     }
 
-    void timelineSliderBuild(){
-        remove(timelineSlider);
-        if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()) return;
-        if(itemStack.isEmpty() || itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
-        int tick = itemStack.get(ModComponents.TICK_COMPONENT).tick();
-        int maxtick = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
-        timelineSlider = new MP4TimelineSlider(x + 15, y + 70,144, 12, Text.literal(""),
-                 (double) tick/maxtick, itemStack);
-        if(timelineSlider != null)
-            this.addDrawableChild(timelineSlider);
+    void FBBBuild(){
+        remove(ffb);
+        ffb = new TexturedButtonWidget(x + 15, y + 55, 13, 13,
+                FBB_TEXTURE, (btn) -> {
+            this.client.interactionManager.clickButton(handler.syncId, 41);
+            FBBBuild();
+        });
+        this.addDrawableChild(ffb);
     }
 
-    void volumeSliderBuild(){
-        if(itemStack.isEmpty()) return;
-        float volume = itemStack.get(ModComponents.VOLUME_COMPONENT).volume();
+    void timelineSliderBuild(ItemStack stack){
+        if(timelineSlider != null){
+            if(timelineSlider.isDragging()) return;
+            remove(timelineSlider);
+        }
+        if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()) return;
+        if(stack.isEmpty() || stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
+        double tick = stack.get(ModComponents.TICK_COMPONENT).tick();
+        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+        timelineSlider = new MP4TimelineSlider(x + 15, y + 70,144, 12, Text.literal(""),
+                 tick/maxtick, stack);
+        this.addDrawableChild(timelineSlider);
+    }
+
+    void volumeSliderBuild(ItemStack stack){
+        if(stack.isEmpty()) return;
+        float volume = stack.get(ModComponents.VOLUME_COMPONENT).volume();
         MP4VolumeSlider volumeSlider = new MP4VolumeSlider(x + 68, y + 15,12, 39, Text.literal(""), volume);
         this.addDrawableChild(volumeSlider);
     }

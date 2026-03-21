@@ -1,4 +1,4 @@
-package com.soundrecording.Screens.Widgets;
+package com.soundrecording.Screens.MP4Player;
 
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Payload.TimelineSliderC2SPayload;
@@ -13,6 +13,7 @@ import net.minecraft.util.Identifier;
 public class MP4TimelineSlider extends SliderWidget {
     private static final Identifier SLIDER_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4timeline_slider.png");
     private static final Identifier HANDLE_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4timeline_handler.png");
+    boolean isdragging;
     ItemStack stack;
     int prestatus;
 
@@ -43,13 +44,34 @@ public class MP4TimelineSlider extends SliderWidget {
     public void onClick(double mouseX, double mouseY) {
         super.onClick(mouseX, mouseY);
         prestatus = stack.get(ModComponents.STATUS_COMPONENT).playstatus();
+        isdragging = true;
         ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) value, prestatus, 0));
     }
 
     @Override
+    protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
+        super.onDrag(mouseX, mouseY, deltaX, deltaY);
+        isdragging = true;
+        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 1));
+    }
+    
+    @Override
     public void onRelease(double mouseX, double mouseY){
         super.onRelease(mouseX, mouseY);
-        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 1));
+        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 2));
+        isdragging = false;
+    }
+
+    public boolean isDragging(){
+        return isdragging;
+    }
+
+    public void adjustValue(ItemStack stack){
+        if(isdragging) return;
+        this.stack = stack;
+        double tick = stack.get(ModComponents.TICK_COMPONENT).tick();
+        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+        this.value = tick/maxtick;
     }
 
 }
