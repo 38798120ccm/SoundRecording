@@ -7,10 +7,6 @@ import net.minecraft.client.sound.*;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.math.floatprovider.FloatProvider;
-import net.minecraft.util.math.floatprovider.FloatSupplier;
-import net.minecraft.util.math.random.Random;
 
 public class PlayerFollowingSoundInstance extends MovingSoundInstance {
 

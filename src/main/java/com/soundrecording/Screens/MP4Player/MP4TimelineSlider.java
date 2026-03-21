@@ -54,7 +54,7 @@ public class MP4TimelineSlider extends SliderWidget {
         isdragging = true;
         ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 1));
     }
-    
+
     @Override
     public void onRelease(double mouseX, double mouseY){
         super.onRelease(mouseX, mouseY);
@@ -67,7 +67,7 @@ public class MP4TimelineSlider extends SliderWidget {
     }
 
     public void adjustValue(ItemStack stack){
-        if(isdragging) return;
+        if(isdragging || stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
         this.stack = stack;
         double tick = stack.get(ModComponents.TICK_COMPONENT).tick();
         double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();

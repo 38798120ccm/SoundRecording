@@ -1,6 +1,5 @@
 package com.soundrecording.SoundInstance;
 
-import com.soundrecording.Codecs.DirectionCodec;
 import com.soundrecording.Codecs.PositionCodec;
 import com.soundrecording.Codecs.SoundCodec;
 import net.minecraft.client.sound.MovingSoundInstance;
@@ -11,7 +10,6 @@ import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.random.Random;
 
 public class DistancedSoundInstance extends MovingSoundInstance {
     private final LivingEntity entity;

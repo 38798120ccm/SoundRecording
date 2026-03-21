@@ -1,6 +1,5 @@
 package com.soundrecording.Items;
 import com.soundrecording.Codecs.ItemStackCodec;
-import com.soundrecording.Codecs.SoundListCodec;
 import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4Player;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
@@ -10,9 +9,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-
-import java.util.ArrayList;
-
 
 public class ModItems {
     public static final Item MP4PLAYER = register("mp4player", new MP4Player(new MP4Player.Settings().maxCount(1)
