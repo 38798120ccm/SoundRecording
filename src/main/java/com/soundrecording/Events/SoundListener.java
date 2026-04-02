@@ -7,6 +7,7 @@ import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.ItemStackRecordC2SPayload;
+import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
@@ -28,6 +29,7 @@ public class SoundListener implements SoundInstanceListener {
                 if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != MP4PlayerStatus.Loop.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
                 sendSoundPayloadC2S(sound, player, i, stack.get(ModComponents.TICK_COMPONENT).tick());
+                SoundRecordingMod.LOGGER.info(sound.getId().getPath());
             }
         }
     }
@@ -35,7 +37,7 @@ public class SoundListener implements SoundInstanceListener {
     void sendSoundPayloadC2S(SoundInstance sound, ClientPlayerEntity player, int slotId, int tick){
         ItemStackRecordC2SPayload payload = new ItemStackRecordC2SPayload(
                 new SoundCodec(sound.getId(), sound.getSound().getIdentifier(), sound.getVolume(), sound.getPitch(),
-                        sound.getSound().getRegistrationType().name(), sound.getSound().isStreamed(), sound.getSound().getAttenuation()),
+                        sound.getSound().getRegistrationType().name(), sound.getSound().isStreamed(), sound.getSound().getAttenuation(), 0),
                 new PositionCodec(sound.getX() - player.getX(), sound.getY() - player.getY(), sound.getZ() - player.getZ()),
                 new DirectionCodec(player.getYaw(), player.getPitch()), slotId, tick);
         ClientPlayNetworking.send(payload);

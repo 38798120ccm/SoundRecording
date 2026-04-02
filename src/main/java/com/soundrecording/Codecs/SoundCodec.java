@@ -9,7 +9,7 @@ import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
 
 public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier, float volume, float pitch,
-                         String registrationType, boolean stream, int attenuation) implements CustomPayload{
+                         String registrationType, boolean stream, int attenuation, int ticksSinceSongStarted) implements CustomPayload{
 
     public static final Codec<SoundCodec> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -19,7 +19,8 @@ public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier,
                     Codec.FLOAT.fieldOf("pitch").forGetter(SoundCodec::pitch),
                     Codec.STRING.fieldOf("registrationType").forGetter(SoundCodec::registrationType),
                     Codec.BOOL.fieldOf("stream").forGetter(SoundCodec::stream),
-                    Codec.INT.fieldOf("attenuation").forGetter(SoundCodec::attenuation)
+                    Codec.INT.fieldOf("attenuation").forGetter(SoundCodec::attenuation),
+                    Codec.INT.fieldOf("ticksSinceSongStarted").forGetter(SoundCodec::ticksSinceSongStarted)
             ).apply(builder, SoundCodec::new)
     );
 
@@ -36,8 +37,9 @@ public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier,
             var f5 = buf.readString();
             var f6 = buf.readBoolean();
             var f7 = buf.readInt();
+            var f8 = buf.readInt();
 
-            return new SoundCodec(f1, f2, f3, f4, f5, f6, f7);
+            return new SoundCodec(f1, f2, f3, f4, f5, f6, f7, f8);
         }
 
         @Override
@@ -49,6 +51,7 @@ public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier,
             buf.writeString(value.registrationType);
             buf.writeBoolean(value.stream);
             buf.writeInt(value.attenuation);
+            buf.writeInt(value.ticksSinceSongStarted);
         }
     };
 
