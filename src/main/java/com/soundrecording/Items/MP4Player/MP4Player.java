@@ -1,6 +1,9 @@
 package com.soundrecording.Items.MP4Player;
 
+import com.soundrecording.Codecs.DirectionCodec;
 import com.soundrecording.Codecs.ItemStackCodec;
+import com.soundrecording.Codecs.PositionCodec;
+import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.*;
 import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
 import com.soundrecording.Screens.MP4Player.MP4PlayerScreenHandler;
@@ -10,6 +13,8 @@ import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.sound.Sound;
+import net.minecraft.client.sound.SoundManager;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -55,9 +60,10 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         }
 
         if(stack.contains(ModComponents.TICK_COMPONENT)) {
-            int current_hr =  stack.get(ModComponents.TICK_COMPONENT).tick()/72000;
-            int current_min = stack.get(ModComponents.TICK_COMPONENT).tick()/1200;
-            int current_sec = (stack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+            int tick = stack.get(ModComponents.TICK_COMPONENT).value();
+            int current_hr =  tick/72000;
+            int current_min = tick/1200;
+            int current_sec = (tick/20)%60;
             String current = String.format("%02d:%02d:%02d", current_hr, current_min, current_sec);
             tooltip.add(Text.literal("Current: " + current).formatted(Formatting.GOLD));
         }
@@ -67,7 +73,6 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
     public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
         ItemStack itemStack = user.getStackInHand(Hand.MAIN_HAND);
         if (!world.isClient) {
-            TickComponent tickComponent = itemStack.get(ModComponents.TICK_COMPONENT);
             ItemStackCodec itemStackCodec = itemStack.get(ModComponents.ITEMSTACK_COMPONENT);
             StatusComponent statusComponent = itemStack.get(ModComponents.STATUS_COMPONENT);
             if(user.isSneaking()) {
@@ -93,20 +98,20 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
         if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
 
         StatusComponent statusComponent = stack.get(ModComponents.STATUS_COMPONENT);
-        TickComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
-        int nexttick = tickComponent.tick() + 1;
+        IntComponent tickComponent = stack.get(ModComponents.TICK_COMPONENT);
+        int nexttick = tickComponent.value() + 1;
 
         if(statusComponent.playstatus() == MP4PlayerStatus.Loop.ordinal()){
             if(statusComponent.recordstatus() == MP4PlayerStatus.Recording.ordinal()){
-                stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                stack.set(ModComponents.TICK_COMPONENT, new IntComponent(nexttick));
             }
             else if(statusComponent.recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
-                if(tickComponent.tick() > stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick()){
-                    stack.set(ModComponents.TICK_COMPONENT, new TickComponent(0));
+                if(tickComponent.value() > stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).value()){
+                    stack.set(ModComponents.TICK_COMPONENT, new IntComponent(0));
                 }
                 else {
-                    playTickSound(world, stack, tickComponent.tick());
-                    stack.set(ModComponents.TICK_COMPONENT, new TickComponent(nexttick));
+                    playTickSound(world, stack, tickComponent.value());
+                    stack.set(ModComponents.TICK_COMPONENT, new IntComponent(nexttick));
 
                     if(world.isClient) return;
                     if(entity instanceof ServerPlayerEntity serverPlayer){
@@ -148,25 +153,31 @@ public class MP4Player extends Item implements ExtendedScreenHandlerFactory<Item
     }
 
     @Environment(EnvType.CLIENT)
-    void playTickSound(World world, ItemStack stack, int tick){
-        if(world.isClient){
-            boolean issoundaround = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround();
-            RecordingComponent rc = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.RECORDING_COMPONENT);
-            float volume = stack.get(ModComponents.VOLUME_COMPONENT).volume();
-            MinecraftClient client = MinecraftClient.getInstance();
+    void playTickSound(World world ,ItemStack stack, int tick) {
+        if(!world.isClient) return;
+        BooleanComponent soundAroundComp = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT);
+        ItemStackCodec itemStackComp = stack.get(ModComponents.ITEMSTACK_COMPONENT);
+        FloatComponent volumeComp = stack.get(ModComponents.VOLUME_COMPONENT);
+        if(soundAroundComp == null || itemStackComp == null || volumeComp == null) return;
 
-            int index = Collections.binarySearch(rc.tick(), tick);
-            if(index >= 0){
-                for(int i=0; i<rc.sound().get(index).size(); i++){
-                    PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
-                            SoundEvent.of(rc.sound().get(index).get(i).eventIdentifier()), SoundCategory.RECORDS,
-                            rc.pos().get(index).get(i), rc.dir().get(index).get(i),
-                            rc.sound().get(index).get(i).volume() * volume,
-                            rc.sound().get(index).get(i).pitch(),
-                            issoundaround, rc.sound().get(index).get(i));
-                    client.getSoundManager().play(instance);
-                }
-            }
+        RecordingComponent rc = itemStackComp.itemStack().get(ModComponents.RECORDING_COMPONENT);
+        if (rc == null) return;
+        RecordingComponent.TickData data = rc.tickData().get(tick);
+        if (data == null) return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        for (int i=0; i<data.sounds().size(); i++) {
+            PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(
+                    client.player,
+                    data.sounds().get(i),
+                    data.positions().get(i),
+                    data.directions().get(i),
+                    SoundCategory.RECORDS,
+                    data.sounds().get(i).volume() * volumeComp.value(),
+                    data.sounds().get(i).pitch(),
+                    soundAroundComp.value()
+            );
+            client.getSoundManager().play(instance);
         }
     }
 }

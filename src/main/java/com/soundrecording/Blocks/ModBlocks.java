@@ -13,6 +13,8 @@ import net.minecraft.util.Identifier;
 public class ModBlocks {
     public static final Block SPEAKER_BLOCK = registerBlock("speaker_block",
             new SpeakerBlock(AbstractBlock.Settings.create().strength(1f).sounds(BlockSoundGroup.COPPER)));
+    public static final Block SOUNDEFFECTCOLLECTOR_BLOCK = registerBlock("soundeffectcollector_block",
+            new SoundEffectCollectorBlock(AbstractBlock.Settings.create().strength(1f).sounds(BlockSoundGroup.COPPER).nonOpaque()));
 
     private static Block registerBlock(String name, Block block){
         registerBlockItem(name, block);

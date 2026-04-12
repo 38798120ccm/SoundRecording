@@ -45,20 +45,20 @@ public class MP4TimelineSlider extends SliderWidget {
         super.onClick(mouseX, mouseY);
         prestatus = stack.get(ModComponents.STATUS_COMPONENT).playstatus();
         isdragging = true;
-        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) value, prestatus, 0));
+        sendPayload(0);
     }
 
     @Override
     protected void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
         super.onDrag(mouseX, mouseY, deltaX, deltaY);
         isdragging = true;
-        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 1));
+        sendPayload(1);
     }
 
     @Override
     public void onRelease(double mouseX, double mouseY){
         super.onRelease(mouseX, mouseY);
-        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, 2));
+        sendPayload(2);
         isdragging = false;
     }
 
@@ -69,9 +69,12 @@ public class MP4TimelineSlider extends SliderWidget {
     public void adjustValue(ItemStack stack){
         if(isdragging || stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
         this.stack = stack;
-        double tick = stack.get(ModComponents.TICK_COMPONENT).tick();
-        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+        double tick = stack.get(ModComponents.TICK_COMPONENT).value();
+        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).value();
         this.value = tick/maxtick;
     }
 
+    private void sendPayload(int id){
+        ClientPlayNetworking.send(new TimelineSliderC2SPayload((float) this.value, prestatus, id));
+    }
 }

@@ -5,15 +5,19 @@ import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Codecs.PositionCodec;
 import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.*;
+import com.soundrecording.Items.MP4Player.MP4Player;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.Screens.MP4Player.MP4PlayerScreen;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
+import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.ArrayList;
@@ -25,11 +29,12 @@ public class ModPayloads {
         PayloadTypeRegistry.playC2S().register(ItemStackRecordC2SPayload.ID, ItemStackRecordC2SPayload.PACKET_CODEC);
         PayloadTypeRegistry.playC2S().register(VolumeSliderC2SPayload.ID, VolumeSliderC2SPayload.PACKET_CODEC);
         PayloadTypeRegistry.playC2S().register(TimelineSliderC2SPayload.ID, TimelineSliderC2SPayload.PACKET_CODEC);
+        PayloadTypeRegistry.playC2S().register(PitchSliderC2SPayload.ID, PitchSliderC2SPayload.PACKET_CODEC);
 
         RegisterItemStackRecordC2SPayload();
         RegisterVolumeSliderC2SPayload();
         RegisterTimelineSliderC2SPayload();
-
+        RegisterPitchSliderC2SPayload();
     }
 
     public static void initializeClient(){
@@ -48,7 +53,7 @@ public class ModPayloads {
                 sdStack.set(ModComponents.RECORDING_COMPONENT, recordSound2Component(
                         sdStack.get(ModComponents.RECORDING_COMPONENT), payload, payload.tick()));
                 mp4Stack.set(ModComponents.ITEMSTACK_COMPONENT, new ItemStackCodec(sdStack));
-                sdStack.set(ModComponents.TICK_COMPONENT, new TickComponent(payload.tick()));
+                sdStack.set(ModComponents.TICK_COMPONENT, new IntComponent(payload.tick()));
             });
         });
     }
@@ -57,8 +62,19 @@ public class ModPayloads {
         ServerPlayNetworking.registerGlobalReceiver(VolumeSliderC2SPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
-                ItemStack mp4Stack = player.getMainHandStack();
-                mp4Stack.set(ModComponents.VOLUME_COMPONENT, new VolumeComponent(payload.volume()));
+                ItemStack stack = player.getMainHandStack();
+                if(!stack.isOf(ModItems.MP4PLAYER)) return;
+                stack.set(ModComponents.VOLUME_COMPONENT, new FloatComponent(payload.volume()));
+            });
+        });
+    }
+    static void RegisterPitchSliderC2SPayload(){
+        ServerPlayNetworking.registerGlobalReceiver(PitchSliderC2SPayload.ID, (payload, context) -> {
+            context.server().execute(() -> {
+                ServerPlayerEntity player = context.player();
+                ItemStack stack = player.getMainHandStack();
+                if(!stack.isOf(ModItems.SOUNDEFFECTBOOK)) return;
+                stack.set(ModComponents.PITCH_COMPONENT, new FloatComponent(payload.pitch()));
             });
         });
     }
@@ -69,15 +85,15 @@ public class ModPayloads {
                 ServerPlayerEntity player = context.player();
                 ItemStack mp4Stack = player.getMainHandStack();
                 if(!mp4Stack.isOf(ModItems.MP4PLAYER)) return;
-                int maxtick = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+                int maxtick = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).value();
                 if(payload.id() == 0){
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), MP4PlayerStatus.PlayMode.ordinal()));
                 }
                 else if (payload.id() == 1) {
-                    mp4Stack.set(ModComponents.TICK_COMPONENT, new TickComponent((int)Math.floor(maxtick * payload.percent())));
+                    mp4Stack.set(ModComponents.TICK_COMPONENT, new IntComponent((int)Math.floor(maxtick * payload.percent())));
                 }
                 else if(payload.id() == 2){
-                    mp4Stack.set(ModComponents.TICK_COMPONENT, new TickComponent((int)Math.floor(maxtick * payload.percent())));
+                    mp4Stack.set(ModComponents.TICK_COMPONENT, new IntComponent((int)Math.floor(maxtick * payload.percent())));
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(payload.prestatus(), MP4PlayerStatus.PlayMode.ordinal()));
                 }
             });
@@ -100,34 +116,16 @@ public class ModPayloads {
         if(rc == null){
             rc = new RecordingComponent();
         }
+        Int2ObjectMap<RecordingComponent.TickData> newMap = new Int2ObjectOpenHashMap<>(rc.tickData());
+        RecordingComponent.TickData tickData = newMap.computeIfAbsent(tick, k ->
+                new RecordingComponent.TickData(new ArrayList<>(), new ArrayList<>(), new ArrayList<>())
+        );
 
-        List<List<SoundCodec>> soundlist = new ArrayList<>(rc.sound());
-        List<List<PositionCodec>> poslist = new ArrayList<>(rc.pos());
-        List<List<DirectionCodec>> dirlist = new ArrayList<>(rc.dir());
-        List<Integer> ticklist = new ArrayList<>(rc.tick());
+        tickData.sounds().add(payload.soundPayload());
+        tickData.positions().add(payload.posPayload());
+        tickData.directions().add(payload.dirPayload());
 
-        int index = Collections.binarySearch(ticklist, tick);
-        if(index < 0){
-            List<SoundCodec> newticksoundlist = new ArrayList<>();
-            List<PositionCodec> newtickposlist = new ArrayList<>();
-            List<DirectionCodec> newtickdirlist = new ArrayList<>();
-
-            newticksoundlist.add(payload.soundPayload());
-            newtickposlist.add(payload.posPayload());
-            newtickdirlist.add(payload.dirPayload());
-
-            soundlist.add(newticksoundlist);
-            poslist.add(newtickposlist);
-            dirlist.add(newtickdirlist);
-
-            ticklist.add(tick);
-        }
-        else {
-            soundlist.get(index).add(payload.soundPayload());
-            poslist.get(index).add(payload.posPayload());
-            dirlist.get(index).add(payload.dirPayload());
-        }
-        return new RecordingComponent(soundlist, poslist, dirlist, ticklist, rc.size()+1);
+        return new RecordingComponent(newMap, rc.size() + 1);
     }
 }
 

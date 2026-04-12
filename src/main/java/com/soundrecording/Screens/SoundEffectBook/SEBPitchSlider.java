@@ -1,20 +1,23 @@
-package com.soundrecording.Screens.MP4Player;
+package com.soundrecording.Screens.SoundEffectBook;
 
-import com.soundrecording.Payload.VolumeSliderC2SPayload;
+import com.soundrecording.Payload.PitchSliderC2SPayload;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.SliderWidget;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
-public class MP4VolumeSlider extends SliderWidget {
+public class SEBPitchSlider extends SliderWidget {
+    SoundEffectBookScreen screen;
     private static final Identifier SLIDER_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4volume_slider.png");
     private static final Identifier HANDLE_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4volume_handler.png");
 
-    public MP4VolumeSlider(int x, int y, int width, int height, Text text, double value) {
+    public SEBPitchSlider(int x, int y, int width, int height, Text text, double value, Screen screen) {
         super(x, y, width, height, text, value);
+        this.screen = (SoundEffectBookScreen) screen;
     }
 
     @Override
@@ -67,6 +70,6 @@ public class MP4VolumeSlider extends SliderWidget {
     }
 
     private void sendPayload(){
-        ClientPlayNetworking.send(new VolumeSliderC2SPayload((float) value));
+        ClientPlayNetworking.send(new PitchSliderC2SPayload((float) value*2));
     }
 }

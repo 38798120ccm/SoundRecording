@@ -16,9 +16,9 @@ public class DistancedSoundInstance extends MovingSoundInstance {
     private final BlockPos blockPos;
     private final PositionCodec pos;
 
-    public DistancedSoundInstance(LivingEntity entity, BlockPos blockPos, SoundEvent soundEvent, SoundCategory soundCategory,
-                                  PositionCodec pos, float volume, float pitch, SoundCodec soundCodec) {
-        super(soundEvent, soundCategory, SoundInstance.createRandom());
+    public DistancedSoundInstance(LivingEntity entity, BlockPos blockPos, SoundCodec soundCodec,
+                                  PositionCodec pos, SoundCategory soundCategory, float volume, float pitch) {
+        super(SoundEvent.of(soundCodec.eventIdentifier()), soundCategory, SoundInstance.createRandom());
         this.entity = entity;
         this.blockPos = blockPos;
         this.volume = volume;

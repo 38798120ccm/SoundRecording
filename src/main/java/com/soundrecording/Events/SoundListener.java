@@ -15,12 +15,24 @@ import net.minecraft.client.sound.SoundInstance;
 import net.minecraft.client.sound.SoundInstanceListener;
 import net.minecraft.client.sound.WeightedSoundSet;
 import net.minecraft.item.ItemStack;
+import net.minecraft.sound.SoundCategory;
+import net.minecraft.sound.SoundEvents;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
+
+import java.util.List;
+import java.util.Set;
 
 public class SoundListener implements SoundInstanceListener {
     @Override
     public void onSoundPlayed(SoundInstance sound, WeightedSoundSet soundSet, float range){
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         if(player == null){return;}
+        Vec3d soundPos = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
+//        if(sound.getCategory() == SoundCategory.RECORDS){return;}
+        if(!player.getPos().isInRange(soundPos, range)){return;}
+        System.out.println(sound.getSound().getIdentifier());
         if(player.getInventory().contains(stack -> stack.isOf(ModItems.MP4PLAYER))){
             for (int i = 0; i < player.getInventory().size(); i++) {
                 ItemStack stack = player.getInventory().getStack(i);
@@ -28,8 +40,8 @@ public class SoundListener implements SoundInstanceListener {
                 if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() != MP4PlayerStatus.Recording.ordinal()){continue;}
                 if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != MP4PlayerStatus.Loop.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
-                sendSoundPayloadC2S(sound, player, i, stack.get(ModComponents.TICK_COMPONENT).tick());
-                SoundRecordingMod.LOGGER.info(sound.getId().getPath());
+                sendSoundPayloadC2S(sound, player, i, stack.get(ModComponents.TICK_COMPONENT).value());
+
             }
         }
     }

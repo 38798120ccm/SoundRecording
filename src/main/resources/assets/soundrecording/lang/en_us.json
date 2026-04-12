@@ -2,6 +2,8 @@
   "itemGroup.soundrecording": "Sound Recording Mod",
   "item.soundrecording.mp4player": "MP4Player",
   "item.soundrecording.microsd": "MicroSD",
+  "item.soundrecording.sound_effect_book": "Sound Effect Book",
 
-  "block.soundrecording.speaker_block": "Speaker"
+  "block.soundrecording.speaker_block": "Speaker",
+  "block.soundrecording.soundeffectcollector_block": "Sound Effect Collector"
 }

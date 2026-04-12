@@ -7,9 +7,10 @@ import net.minecraft.network.RegistryByteBuf;
 import net.minecraft.network.codec.PacketCodec;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.NotNull;
 
 public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier, float volume, float pitch,
-                         String registrationType, boolean stream, int attenuation, int ticksSinceSongStarted) implements CustomPayload{
+                         String registrationType, boolean stream, int attenuation, int ticksSinceSongStarted) implements CustomPayload, Comparable<SoundCodec>{
 
     public static final Codec<SoundCodec> CODEC = RecordCodecBuilder.create(builder ->
             builder.group(
@@ -57,4 +58,9 @@ public record SoundCodec(Identifier eventIdentifier, Identifier soundIdentifier,
 
     @Override
     public CustomPayload.Id<? extends CustomPayload> getId() { return ID; }
+
+    @Override
+    public int compareTo(@NotNull SoundCodec o) {
+        return this.soundIdentifier.compareTo(o.soundIdentifier);
+    }
 }

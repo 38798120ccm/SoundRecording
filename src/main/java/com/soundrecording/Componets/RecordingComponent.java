@@ -6,25 +6,56 @@ import com.mojang.serialization.codecs.RecordCodecBuilder;
 import com.soundrecording.Codecs.DirectionCodec;
 import com.soundrecording.Codecs.PositionCodec;
 import com.soundrecording.Codecs.SoundCodec;
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-public record RecordingComponent(List<List<SoundCodec>> sound, List<List<PositionCodec>> pos, List<List<DirectionCodec>> dir,
-                                 List<Integer> tick, int size) {
+public record RecordingComponent(Int2ObjectMap<TickData> tickData, int size) {
 
     public RecordingComponent() {
-        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), 0);
+        this(new Int2ObjectOpenHashMap<>(), 0);
     }
 
+    public record TickData(List<SoundCodec> sounds, List<PositionCodec> positions, List<DirectionCodec> directions) {
+        public static final Codec<TickData> CODEC = RecordCodecBuilder.create(builder ->
+                builder.group(
+                        SoundCodec.CODEC.listOf().fieldOf("sounds").forGetter(TickData::sounds),
+                        PositionCodec.CODEC.listOf().fieldOf("positions").forGetter(TickData::positions),
+                        DirectionCodec.CODEC.listOf().fieldOf("directions").forGetter(TickData::directions)
+                ).apply(builder, TickData::new)
+        );
+    }
+
+    public static final Codec<Int2ObjectMap<TickData>> MAP_CODEC =
+            Codec.unboundedMap(Codec.STRING, TickData.CODEC).xmap(
+                    stringMap -> {
+                        Int2ObjectMap<TickData> fastMap = new Int2ObjectOpenHashMap<>();
+                        stringMap.forEach((s, data) -> {
+                            try {
+                                fastMap.put(Integer.parseInt(s), data);
+                            } catch (NumberFormatException e) {
+                            }
+                        });
+                        return fastMap;
+                    },
+                    fastMap -> {
+                        Map<String, TickData> stringMap = new HashMap<>();
+                        fastMap.forEach((tick, data) -> {
+                            stringMap.put(String.valueOf(tick), data);
+                        });
+                        return stringMap;
+                    }
+            );
+
     public static final Codec<RecordingComponent> CODEC = RecordCodecBuilder.create(builder ->
-        builder.group(
-                SoundCodec.CODEC.listOf().listOf().fieldOf("sounds").forGetter(RecordingComponent::sound),
-                PositionCodec.CODEC.listOf().listOf().fieldOf("positions").forGetter(RecordingComponent::pos),
-                DirectionCodec.CODEC.listOf().listOf().fieldOf("directions").forGetter(RecordingComponent::dir),
-                Codec.INT.listOf().fieldOf("ticks").forGetter(RecordingComponent::tick),
-                Codec.INT.fieldOf("size").forGetter(RecordingComponent::size)
-        ).apply(builder, RecordingComponent::new)
+            builder.group(
+                    MAP_CODEC.fieldOf("tickdata").forGetter(RecordingComponent::tickData),
+                    Codec.INT.fieldOf("size").forGetter(RecordingComponent::size)
+            ).apply(builder, RecordingComponent::new)
     );
 }
 

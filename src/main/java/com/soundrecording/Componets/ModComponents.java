@@ -23,25 +23,30 @@ public class ModComponents {
             Identifier.of(SoundRecordingMod.MOD_ID, "itemstack_component"),
             ComponentType.<ItemStackCodec>builder().codec(ItemStackCodec.CODEC).build()
     );
-    public static final ComponentType<TickComponent> TICK_COMPONENT = Registry.register(
+    public static final ComponentType<IntComponent> TICK_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(SoundRecordingMod.MOD_ID, "tick_component"),
-            ComponentType.<TickComponent>builder().codec(TickComponent.CODEC).build()
+            ComponentType.<IntComponent>builder().codec(IntComponent.CODEC).build()
     );
     public static final ComponentType<StatusComponent> STATUS_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(SoundRecordingMod.MOD_ID, "status_component"),
             ComponentType.<StatusComponent>builder().codec(StatusComponent.CODEC).build()
     );
-    public static final ComponentType<IsSoundAroundComponent> IS_SOUNDAROUND_COMPONENT = Registry.register(
+    public static final ComponentType<BooleanComponent> IS_SOUNDAROUND_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(SoundRecordingMod.MOD_ID, "issoundaround_component"),
-            ComponentType.<IsSoundAroundComponent>builder().codec(IsSoundAroundComponent.CODEC).build()
+            ComponentType.<BooleanComponent>builder().codec(BooleanComponent.CODEC).build()
     );
-    public static final ComponentType<VolumeComponent> VOLUME_COMPONENT = Registry.register(
+    public static final ComponentType<FloatComponent> VOLUME_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,
             Identifier.of(SoundRecordingMod.MOD_ID, "volume_component"),
-            ComponentType.<VolumeComponent>builder().codec(VolumeComponent.CODEC).build()
+            ComponentType.<FloatComponent>builder().codec(FloatComponent.CODEC).build()
+    );
+    public static final ComponentType<FloatComponent> PITCH_COMPONENT = Registry.register(
+            Registries.DATA_COMPONENT_TYPE,
+            Identifier.of(SoundRecordingMod.MOD_ID, "pitch_component"),
+            ComponentType.<FloatComponent>builder().codec(FloatComponent.CODEC).build()
     );
     public static final ComponentType<SoundListCodec> SOUNDLIST_COMPONENT = Registry.register(
             Registries.DATA_COMPONENT_TYPE,

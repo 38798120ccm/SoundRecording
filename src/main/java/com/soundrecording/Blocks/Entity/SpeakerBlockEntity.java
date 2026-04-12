@@ -1,8 +1,8 @@
 package com.soundrecording.Blocks.Entity;
 
+import com.soundrecording.Componets.IntComponent;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Componets.RecordingComponent;
-import com.soundrecording.Componets.TickComponent;
 import com.soundrecording.Items.ModItems;
 import com.soundrecording.SoundInstance.DistancedSoundInstance;
 import com.soundrecording.SoundInstance.PlayerFollowingSoundInstance;
@@ -75,64 +75,67 @@ public class SpeakerBlockEntity extends BlockEntity implements ImplementedInvent
 
     public void tick(World world, BlockPos pos, BlockState state1) {
         if(this.getCachedState().get(POWERED)) return;
-        if (world.isClient){
-            if(inventory.getFirst().isOf(ModItems.MICROSD)) {
-                TickComponent tc = inventory.get(0).get(ModComponents.TICK_COMPONENT);
-                if(tc.tick() == 0){return;}
-                if(tick <= tc.tick()){
-                    RecordingComponent rc = inventory.get(0).get(ModComponents.RECORDING_COMPONENT);
-                    if(true){
-                        playDistanceSound(world, rc, tick, pos);
-                    }
-                    else{
-                        playPlayerAroundSound(world, rc, tick, pos);
-                    }
-                    tick++;
-                }
-                else{
-                    tick = 0;
-                }
+        if(!world.isClient) return;
+        if(!inventory.getFirst().isOf(ModItems.MICROSD)) return;
+
+        IntComponent tc = inventory.get(0).get(ModComponents.TICK_COMPONENT);
+        if(tc.value() == 0){return;}
+        if(tick <= tc.value()){
+            RecordingComponent rc = inventory.get(0).get(ModComponents.RECORDING_COMPONENT);
+            if(true){
+                playDistanceSound(world, rc, tick, pos);
             }
+            else{
+                playPlayerAroundSound(world, rc, tick, pos);
+            }
+            tick++;
+        }
+        else{
+            tick = 0;
         }
     }
 
     @Environment(EnvType.CLIENT)
     void playPlayerAroundSound(World world, RecordingComponent rc, int tick, BlockPos pos){
-        if(world.isClient) {
-            MinecraftClient client = MinecraftClient.getInstance();
-            int index = Collections.binarySearch(rc.tick(), tick);
-            if (index >= 0) {
-                for (int i = 0; i < rc.sound().get(index).size(); i++) {
-                    PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(client.player,
-                            SoundEvent.of(rc.sound().get(index).get(i).eventIdentifier()), SoundCategory.RECORDS,
-                            rc.pos().get(index).get(i), rc.dir().get(index).get(i),
-                            rc.sound().get(index).get(i).volume() * volume,
-                            rc.sound().get(index).get(i).pitch(),
-                            true, rc.sound().get(index).get(i));
-                    client.getSoundManager().play(instance);
-                }
-            }
+        if(!world.isClient) return;
+        if (rc == null) return;
+        RecordingComponent.TickData data = rc.tickData().get(tick);
+        if (data == null) return;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        for (int i=0; i<data.sounds().size(); i++) {
+            PlayerFollowingSoundInstance instance = new PlayerFollowingSoundInstance(
+                    client.player,
+                    data.sounds().get(i),
+                    data.positions().get(i),
+                    data.directions().get(i),
+                    SoundCategory.RECORDS,
+                    data.sounds().get(i).volume() * volume,
+                    data.sounds().get(i).pitch(),
+                    true);
+            client.getSoundManager().play(instance);
         }
     }
 
     @Environment(EnvType.CLIENT)
     void playDistanceSound(World world, RecordingComponent rc, int tick, BlockPos pos){
-        if(world.isClient){
-            MinecraftClient client = MinecraftClient.getInstance();
-            if(client.player.getPos().squaredDistanceTo(Vec3d.ofCenter(pos)) > range*range) return;
+        if(!world.isClient) return;
+        if (rc == null) return;
+        RecordingComponent.TickData data = rc.tickData().get(tick);
+        if (data == null) return;
 
-            int index = Collections.binarySearch(rc.tick(), tick);
-            if (index >= 0) {
-                for (int i = 0; i < rc.sound().get(index).size(); i++){
-                    DistancedSoundInstance instance = new DistancedSoundInstance(client.player, pos,
-                            SoundEvent.of(rc.sound().get(index).get(i).eventIdentifier()), SoundCategory.RECORDS,
-                            rc.pos().get(index).get(i),
-                            rc.sound().get(index).get(i).volume() * volume,
-                            rc.sound().get(index).get(i).pitch(),
-                            rc.sound().get(index).get(i));
-                    client.getSoundManager().play(instance);
-                }
-            }
+        MinecraftClient client = MinecraftClient.getInstance();
+        if(client.player.getPos().squaredDistanceTo(Vec3d.ofCenter(pos)) > range*range) return;
+        for (int i=0; i<data.sounds().size(); i++) {
+            DistancedSoundInstance instance = new DistancedSoundInstance(
+                    client.player, pos,
+                    data.sounds().get(i),
+                    data.positions().get(i),
+                    SoundCategory.RECORDS,
+                    data.sounds().get(i).volume() * volume,
+                    data.sounds().get(i).pitch());
+            client.getSoundManager().play(instance);
         }
+
     }
 }

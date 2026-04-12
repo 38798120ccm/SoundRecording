@@ -121,41 +121,24 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         int duration_sec;
         ItemStack sdstack = itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack();
         if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()){
-            duration_hr = itemStack.get(ModComponents.TICK_COMPONENT).tick()/72000;
-            duration_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/1200;
-            duration_sec = (itemStack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
-
             mode = MP4PlayerStatus.fromInt(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus()).name();
-            context.drawText(
-                    this.textRenderer,
-                    Text.literal("Mode: " + mode),
-                    x + 85,
-                    y + 15,
-                    0x373737,
-                    false
-            );
+
+            duration_hr = itemStack.get(ModComponents.TICK_COMPONENT).value()/72000;
+            duration_min = itemStack.get(ModComponents.TICK_COMPONENT).value()/1200;
+            duration_sec = (itemStack.get(ModComponents.TICK_COMPONENT).value()/20)%60;
         }
         else {
             mode = MP4PlayerStatus.fromInt(itemStack.get(ModComponents.STATUS_COMPONENT).playstatus()).name();
-            context.drawText(
-                    this.textRenderer,
-                    Text.literal("Mode: " + mode),
-                    x + 85,
-                    y + 15,
-                    0x373737,
-                    false
-            );
 
             if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
-            duration_hr =  sdstack.get(ModComponents.TICK_COMPONENT).tick()/72000;
-            duration_min = sdstack.get(ModComponents.TICK_COMPONENT).tick()/1200;
-            duration_sec = (sdstack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+            duration_hr =  sdstack.get(ModComponents.TICK_COMPONENT).value()/72000;
+            duration_min = sdstack.get(ModComponents.TICK_COMPONENT).value()/1200;
+            duration_sec = (sdstack.get(ModComponents.TICK_COMPONENT).value()/20)%60;
 
-            int current_hr =  itemStack.get(ModComponents.TICK_COMPONENT).tick()/72000;
-            int current_min = itemStack.get(ModComponents.TICK_COMPONENT).tick()/1200;
-            int current_sec = (itemStack.get(ModComponents.TICK_COMPONENT).tick()/20)%60;
+            int current_hr =  itemStack.get(ModComponents.TICK_COMPONENT).value()/72000;
+            int current_min = itemStack.get(ModComponents.TICK_COMPONENT).value()/1200;
+            int current_sec = (itemStack.get(ModComponents.TICK_COMPONENT).value()/20)%60;
             String current = String.format("%02d:%02d:%02d", current_hr, current_min, current_sec);
-
             context.drawText(
                     this.textRenderer,
                     Text.literal("Current: " + current),
@@ -165,11 +148,18 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
                     false
             );
         }
+
+        context.drawText(
+                this.textRenderer,
+                Text.literal("Mode: " + mode),
+                x + 85,
+                y + 15,
+                0x373737,
+                false
+        );
+
         if(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
         int size = sdstack.get(ModComponents.RECORDING_COMPONENT).size();
-
-        String duration = String.format("%02d:%02d:%02d", duration_hr, duration_min, duration_sec);
-
         context.drawText(
                 this.textRenderer,
                 Text.literal("Sound Count: " + size),
@@ -179,6 +169,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
                 false
         );
 
+        String duration = String.format("%02d:%02d:%02d", duration_hr, duration_min, duration_sec);
         context.drawText(
                 this.textRenderer,
                 Text.literal("Duration: " + duration),
@@ -207,7 +198,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != itemStack.get(ModComponents.STATUS_COMPONENT).playstatus()){
             playButtonBuild(stack);
         }
-        if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround() != itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
+        if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value() != itemStack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value()){
             soundaroundButtonBuild(stack);
         }
         this.itemStack = stack;
@@ -286,10 +277,10 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
 
     void soundaroundButtonBuild(ItemStack stack){
         remove(soundaroundbutton);
-        int id = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()? 0: 1;
+        int id = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value()? 0: 1;
         soundaroundbutton = new MP4Button(x + 67, y + 55, 13, 13,
                 SOUNDAROUNDBUTTON_TEXTURE, NOSOUNDAROUNDBUTTON_TEXTURE, id, (btn) -> {
-                if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).issoundaround()){
+                if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value()){
                     this.client.interactionManager.clickButton(handler.syncId, 20);
                 }
                 else {
@@ -326,8 +317,8 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         }
         if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()) return;
         if(stack.isEmpty() || stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().isEmpty()) return;
-        double tick = stack.get(ModComponents.TICK_COMPONENT).tick();
-        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).tick();
+        double tick = stack.get(ModComponents.TICK_COMPONENT).value();
+        double maxtick = stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).value();
         timelineSlider = new MP4TimelineSlider(x + 15, y + 70,144, 12, Text.literal(""),
                  tick/maxtick, stack);
         this.addDrawableChild(timelineSlider);
@@ -335,7 +326,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
 
     void volumeSliderBuild(ItemStack stack){
         if(stack.isEmpty()) return;
-        float volume = stack.get(ModComponents.VOLUME_COMPONENT).volume();
+        float volume = stack.get(ModComponents.VOLUME_COMPONENT).value();
         MP4VolumeSlider volumeSlider = new MP4VolumeSlider(x + 68, y + 15,12, 39, Text.literal(""), volume);
         this.addDrawableChild(volumeSlider);
     }
