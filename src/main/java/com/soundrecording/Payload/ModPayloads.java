@@ -1,14 +1,11 @@
 package com.soundrecording.Payload;
 
-import com.soundrecording.Codecs.DirectionCodec;
 import com.soundrecording.Codecs.ItemStackCodec;
-import com.soundrecording.Codecs.PositionCodec;
-import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.*;
-import com.soundrecording.Items.MP4Player.MP4Player;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
-import com.soundrecording.Items.ModItems;
 import com.soundrecording.Screens.MP4Player.MP4PlayerScreen;
+import com.soundrecording.Screens.MP4Player.MP4PlayerScreenHandler;
+import com.soundrecording.Screens.SoundEffectBoard.SEBScreenHandler;
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 import it.unimi.dsi.fastutil.ints.Int2ObjectOpenHashMap;
 import net.fabricmc.api.EnvType;
@@ -17,12 +14,9 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 public class ModPayloads {
     public static void initializeServer() {
@@ -62,9 +56,9 @@ public class ModPayloads {
         ServerPlayNetworking.registerGlobalReceiver(VolumeSliderC2SPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
-                ItemStack stack = player.getMainHandStack();
-                if(!stack.isOf(ModItems.MP4PLAYER)) return;
-                stack.set(ModComponents.VOLUME_COMPONENT, new FloatComponent(payload.volume()));
+                if(!(player.currentScreenHandler instanceof MP4PlayerScreenHandler)) return;
+                MP4PlayerScreenHandler handler = (MP4PlayerScreenHandler) player.currentScreenHandler;
+                handler.itemStack.set(ModComponents.VOLUME_COMPONENT, new FloatComponent(payload.volume()));
             });
         });
     }
@@ -72,8 +66,8 @@ public class ModPayloads {
         ServerPlayNetworking.registerGlobalReceiver(PitchSliderC2SPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
-                ItemStack stack = player.getMainHandStack();
-                if(!stack.isOf(ModItems.SOUNDEFFECTBOOK)) return;
+                if(!(player.currentScreenHandler instanceof SEBScreenHandler)) return;
+                ItemStack stack = ((SEBScreenHandler) player.currentScreenHandler).itemStack;
                 stack.set(ModComponents.PITCH_COMPONENT, new FloatComponent(payload.pitch()));
             });
         });
@@ -83,8 +77,8 @@ public class ModPayloads {
         ServerPlayNetworking.registerGlobalReceiver(TimelineSliderC2SPayload.ID, (payload, context) -> {
             context.server().execute(() -> {
                 ServerPlayerEntity player = context.player();
-                ItemStack mp4Stack = player.getMainHandStack();
-                if(!mp4Stack.isOf(ModItems.MP4PLAYER)) return;
+                if(!(player.currentScreenHandler instanceof MP4PlayerScreenHandler)) return;
+                ItemStack mp4Stack = ((MP4PlayerScreenHandler) player.currentScreenHandler).itemStack;
                 int maxtick = mp4Stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack().get(ModComponents.TICK_COMPONENT).value();
                 if(payload.id() == 0){
                     mp4Stack.set(ModComponents.STATUS_COMPONENT, new StatusComponent(MP4PlayerStatus.Idle.ordinal(), MP4PlayerStatus.PlayMode.ordinal()));

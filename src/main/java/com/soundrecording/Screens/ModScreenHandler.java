@@ -1,9 +1,8 @@
 package com.soundrecording.Screens;
 
-import com.soundrecording.Blocks.SoundEffectCollectorBlock;
 import com.soundrecording.Codecs.ItemStackCodec;
 import com.soundrecording.Screens.MP4Player.MP4PlayerScreenHandler;
-import com.soundrecording.Screens.SoundEffectBook.SoundEffectBookScreenHandler;
+import com.soundrecording.Screens.SoundEffectBoard.SEBScreenHandler;
 import com.soundrecording.Screens.SoundEffectCollector.SoundEffectCollectorScreenHandler;
 import com.soundrecording.SoundRecordingMod;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
@@ -19,9 +18,9 @@ public class ModScreenHandler {
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "mp4player_screen_handler"),
                     new ExtendedScreenHandlerType<>(MP4PlayerScreenHandler::new, ItemStackCodec.PACKET_CODEC));
 
-    public static final ScreenHandlerType<SoundEffectBookScreenHandler> SOUND_EFFECT_BOOK_SCREEN_HANDLER_SCREEN_HANDLER =
+    public static final ScreenHandlerType<SEBScreenHandler> SOUND_EFFECT_BOOK_SCREEN_HANDLER_SCREEN_HANDLER =
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "sound_effect_book_screen_handler"),
-                    new ExtendedScreenHandlerType<>(SoundEffectBookScreenHandler::new, ItemStackCodec.PACKET_CODEC));
+                    new ExtendedScreenHandlerType<>(SEBScreenHandler::new, ItemStackCodec.PACKET_CODEC));
 
     public static final ScreenHandlerType<SoundEffectCollectorScreenHandler> SOUND_EFFECT_COLLECTOR_SCREEN_HANDLER_SCREEN_HANDLER =
             Registry.register(Registries.SCREEN_HANDLER, Identifier.of(SoundRecordingMod.MOD_ID, "sound_effect_collector_screen_handler"),

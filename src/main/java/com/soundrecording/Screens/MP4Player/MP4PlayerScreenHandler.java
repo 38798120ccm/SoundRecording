@@ -5,6 +5,7 @@ import com.soundrecording.Componets.*;
 import com.soundrecording.Items.MP4Player.MP4PlayerInventory;
 import com.soundrecording.Items.MP4Player.MP4PlayerSlot;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
+import com.soundrecording.Items.ModItems;
 import com.soundrecording.Payload.MP4ScreenItemStackS2CPayload;
 import com.soundrecording.Screens.ModScreenHandler;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
@@ -14,12 +15,15 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.screen.ScreenHandler;
 import net.minecraft.screen.ScreenHandlerListener;
 import net.minecraft.screen.slot.Slot;
+import net.minecraft.screen.slot.SlotActionType;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Hand;
 
 public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandlerListener {
     public ItemStack itemStack;
     public final PlayerInventory playerInventory;
     private final MP4PlayerInventory mp4PlayerInventory;
+    public final int lockedslot;
 
     public MP4PlayerScreenHandler(int synvId, PlayerInventory playerInventory, ItemStackCodec payload){
         this(synvId, playerInventory, payload.itemStack());
@@ -30,6 +34,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
         this.itemStack = itemStack;
         this.mp4PlayerInventory = new MP4PlayerInventory(this, itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack());
         this.playerInventory = playerInventory;
+        this.lockedslot = playerInventory.selectedSlot;
 
         this.addSlot(new MP4PlayerSlot(mp4PlayerInventory, 0, 33, 33, itemStack));
 
@@ -40,6 +45,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
 
     @Override
     public ItemStack quickMove(PlayerEntity player, int invSlot) {
+
         ItemStack newStack = ItemStack.EMPTY;
         Slot slot = this.slots.get(invSlot);
         if(slot.hasStack()){
@@ -64,7 +70,10 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
 
     @Override
     public boolean canUse(PlayerEntity player) {
-        return this.mp4PlayerInventory.canPlayerUse(player);
+        if(player.getMainHandStack() != itemStack){
+            return false;
+        }
+        return true;
     }
 
     public void setRecordingState(){
@@ -160,6 +169,7 @@ public class MP4PlayerScreenHandler extends ScreenHandler implements ScreenHandl
 
     @Override
     public void onSlotUpdate(ScreenHandler handler, int slotId, ItemStack stack) {
+        if(slotId != 0) return;
         if(mp4PlayerInventory.getStack(0).isEmpty()){}
         else if(ItemStack.areEqual(itemStack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack(), mp4PlayerInventory.getStack(0))) return;
         else if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()) return;

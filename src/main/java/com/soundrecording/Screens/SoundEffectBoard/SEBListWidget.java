@@ -1,11 +1,9 @@
-package com.soundrecording.Screens.SoundEffectBook;
+package com.soundrecording.Screens.SoundEffectBoard;
 
 import com.soundrecording.Codecs.SoundCodec;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.AlwaysSelectedEntryListWidget;
-import net.minecraft.client.sound.Sound;
-import net.minecraft.util.Identifier;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,21 +1,17 @@
-package com.soundrecording.Screens.SoundEffectBook;
+package com.soundrecording.Screens.SoundEffectBoard;
 
 import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Componets.ModComponents;
-import com.soundrecording.Screens.MP4Player.MP4VolumeSlider;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.entity.player.PlayerInventory;
-import net.minecraft.sound.SoundCategory;
 import net.minecraft.text.Text;
-import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class SoundEffectBookScreen extends HandledScreen<SoundEffectBookScreenHandler> {
+public class SEBScreen extends HandledScreen<SEBScreenHandler> {
     private TextFieldWidget searchBox;
     private SEBListWidget soundList;
     private SEBPitchSlider slider;
@@ -23,7 +19,7 @@ public class SoundEffectBookScreen extends HandledScreen<SoundEffectBookScreenHa
     private List<SoundCodec> filtered;
     public float pitch;
 
-    public SoundEffectBookScreen(SoundEffectBookScreenHandler handler, PlayerInventory inventory, Text title){
+    public SEBScreen(SEBScreenHandler handler, PlayerInventory inventory, Text title){
         super(handler, inventory, title);
         this.soundIdentifiers = this.handler.soundIdentifiers;
         this.pitch = handler.itemStack.get(ModComponents.PITCH_COMPONENT).value();

@@ -32,7 +32,6 @@ public class SoundListener implements SoundInstanceListener {
         Vec3d soundPos = new Vec3d(sound.getX(), sound.getY(), sound.getZ());
 //        if(sound.getCategory() == SoundCategory.RECORDS){return;}
         if(!player.getPos().isInRange(soundPos, range)){return;}
-        System.out.println(sound.getSound().getIdentifier());
         if(player.getInventory().contains(stack -> stack.isOf(ModItems.MP4PLAYER))){
             for (int i = 0; i < player.getInventory().size(); i++) {
                 ItemStack stack = player.getInventory().getStack(i);
@@ -41,7 +40,6 @@ public class SoundListener implements SoundInstanceListener {
                 if(stack.get(ModComponents.STATUS_COMPONENT).playstatus() != MP4PlayerStatus.Loop.ordinal()){continue;}
                 if(stack.get(ModComponents.ITEMSTACK_COMPONENT).itemStack() == ItemStack.EMPTY){continue;}
                 sendSoundPayloadC2S(sound, player, i, stack.get(ModComponents.TICK_COMPONENT).value());
-
             }
         }
     }

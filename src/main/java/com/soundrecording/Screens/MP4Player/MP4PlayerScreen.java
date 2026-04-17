@@ -101,6 +101,10 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
 
     @Override
     protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
+        if(!itemStack.contains(ModComponents.ITEMSTACK_COMPONENT)) return;
+        if(!itemStack.contains(ModComponents.TICK_COMPONENT)) return;
+        if(!itemStack.contains(ModComponents.STATUS_COMPONENT)) return;
+
         RenderSystem.setShader(GameRenderer::getPositionTexProgram);
         RenderSystem.setShaderColor(1f, 1f, 1f, 1f);
         RenderSystem.setShaderTexture(0, GUI_TEXTURE);
@@ -241,7 +245,6 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
         if(itemStack.get(ModComponents.STATUS_COMPONENT).recordstatus() != MP4PlayerStatus.Recording.ordinal()){
             if(keyCode == GLFW.GLFW_KEY_SPACE){
                 playButtonFunction(itemStack);
-                System.out.println("space");
                 return true;
             }
             else if(keyCode == GLFW.GLFW_KEY_LEFT){

@@ -10,11 +10,8 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
-import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.Identifier;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.TreeSet;
 
 public class ModItems {
@@ -29,7 +26,7 @@ public class ModItems {
             .component(ModComponents.RECORDING_COMPONENT, new RecordingComponent())
             .component(ModComponents.TICK_COMPONENT, new IntComponent(0))));
 
-    public static final Item SOUNDEFFECTBOOK = register("sound_effect_book", new SoundEffectBook(new Item.Settings().maxCount(1)
+    public static final Item SOUNDEFFECTBOARD = register("sound_effect_board", new SoundEffectBoard(new Item.Settings().maxCount(1)
             .component(ModComponents.SOUNDLIST_COMPONENT, new SoundListCodec(new TreeSet<SoundCodec>()))
             .component(ModComponents.PITCH_COMPONENT, new FloatComponent(0.5f))));
 

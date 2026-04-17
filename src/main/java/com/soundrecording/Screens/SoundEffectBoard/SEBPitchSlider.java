@@ -1,4 +1,4 @@
-package com.soundrecording.Screens.SoundEffectBook;
+package com.soundrecording.Screens.SoundEffectBoard;
 
 import com.soundrecording.Payload.PitchSliderC2SPayload;
 import com.soundrecording.SoundRecordingMod;
@@ -11,13 +11,13 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 
 public class SEBPitchSlider extends SliderWidget {
-    SoundEffectBookScreen screen;
+    SEBScreen screen;
     private static final Identifier SLIDER_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4volume_slider.png");
     private static final Identifier HANDLE_TEXTURE = Identifier.of(SoundRecordingMod.MOD_ID, "textures/gui/mp4player/mp4volume_handler.png");
 
     public SEBPitchSlider(int x, int y, int width, int height, Text text, double value, Screen screen) {
         super(x, y, width, height, text, value);
-        this.screen = (SoundEffectBookScreen) screen;
+        this.screen = (SEBScreen) screen;
     }
 
     @Override

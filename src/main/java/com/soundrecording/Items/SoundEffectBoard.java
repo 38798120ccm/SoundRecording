@@ -5,8 +5,7 @@ import com.soundrecording.Codecs.SoundCodec;
 import com.soundrecording.Codecs.SoundListCodec;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Componets.RecordingComponent;
-import com.soundrecording.Screens.SoundEffectBook.SoundEffectBookScreenHandler;
-import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
+import com.soundrecording.Screens.SoundEffectBoard.SEBScreenHandler;
 import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerFactory;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -17,15 +16,14 @@ import net.minecraft.screen.ScreenHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class SoundEffectBook extends Item implements ExtendedScreenHandlerFactory<ItemStackCodec> {
-    public SoundEffectBook(Settings settings) {
+public class SoundEffectBoard extends Item implements ExtendedScreenHandlerFactory<ItemStackCodec> {
+    public SoundEffectBoard(Settings settings) {
         super(settings);
     }
 
@@ -67,12 +65,12 @@ public class SoundEffectBook extends Item implements ExtendedScreenHandlerFactor
 
     @Override
     public Text getDisplayName() {
-        return Text.literal("Sound Effect Book");
+        return Text.literal("Sound Effect Board");
     }
 
     @Override
     public @Nullable ScreenHandler createMenu(int syncId, PlayerInventory playerInventory, PlayerEntity player) {
-        return new SoundEffectBookScreenHandler(syncId, playerInventory, player.getStackInHand(Hand.MAIN_HAND));
+        return new SEBScreenHandler(syncId, playerInventory, player.getStackInHand(Hand.MAIN_HAND));
     }
 
 }
