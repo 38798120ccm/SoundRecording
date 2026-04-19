@@ -27,8 +27,7 @@ public class ModItems {
             .component(ModComponents.TICK_COMPONENT, new IntComponent(0))));
 
     public static final Item SOUNDEFFECTBOARD = register("sound_effect_board", new SoundEffectBoard(new Item.Settings().maxCount(1)
-            .component(ModComponents.SOUNDLIST_COMPONENT, new SoundListCodec(new TreeSet<SoundCodec>()))
-            .component(ModComponents.PITCH_COMPONENT, new FloatComponent(0.5f))));
+            .component(ModComponents.SOUNDLIST_COMPONENT, new SoundListCodec(new TreeSet<SoundCodec>()))));
 
     public static Item register(String id, Item item){
         // Create the identifier for the item.

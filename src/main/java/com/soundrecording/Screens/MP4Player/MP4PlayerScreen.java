@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.soundrecording.Componets.ModComponents;
 import com.soundrecording.Items.MP4Player.MP4PlayerStatus;
 import com.soundrecording.Items.ModItems;
+import com.soundrecording.Screens.StateButton;
 import com.soundrecording.SoundRecordingMod;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
@@ -65,9 +66,9 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     );
 
     MP4TimelineSlider timelineSlider;
-    MP4Button recordbutton;
-    MP4Button playbutton;
-    MP4Button soundaroundbutton;
+    StateButton recordbutton;
+    StateButton playbutton;
+    StateButton soundaroundbutton;
     TexturedButtonWidget ffb;
     TexturedButtonWidget fbb;
     ItemStack itemStack;
@@ -226,7 +227,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     void recordButtonBuild(ItemStack stack){
         remove(recordbutton);
         int id = (stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal())? 0: 1;
-        recordbutton = new MP4Button(x + 54, y + 55, 13, 13,
+        recordbutton = new StateButton(x + 54, y + 55, 13, 13,
                 RECORDBUTTON_TEXTURE, STOPRECORDBUTTON_TEXTURE, id, (btn) -> {
             if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.PlayMode.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 1);
@@ -234,7 +235,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
             }
             else if(stack.get(ModComponents.STATUS_COMPONENT).recordstatus() == MP4PlayerStatus.Recording.ordinal()){
                 this.client.interactionManager.clickButton(handler.syncId, 0);
-                ((MP4Button)btn).switchTexture(0);
+                ((StateButton)btn).switchTexture(0);
             }
         });
         this.addDrawableChild(recordbutton);
@@ -262,7 +263,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     void playButtonBuild(ItemStack stack){
         remove(playbutton);
         int id = stack.get(ModComponents.STATUS_COMPONENT).playstatus() == MP4PlayerStatus.Idle.ordinal()? 0: 1;
-        playbutton = new MP4Button(x + 28, y + 55, 13, 13,
+        playbutton = new StateButton(x + 28, y + 55, 13, 13,
                 PLAYBUTTON_TEXTURE, STOPBUTTON_TEXTURE, id, (btn) -> {
             playButtonFunction(stack);
         });
@@ -281,7 +282,7 @@ public class MP4PlayerScreen extends HandledScreen<MP4PlayerScreenHandler> {
     void soundaroundButtonBuild(ItemStack stack){
         remove(soundaroundbutton);
         int id = stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value()? 0: 1;
-        soundaroundbutton = new MP4Button(x + 67, y + 55, 13, 13,
+        soundaroundbutton = new StateButton(x + 67, y + 55, 13, 13,
                 SOUNDAROUNDBUTTON_TEXTURE, NOSOUNDAROUNDBUTTON_TEXTURE, id, (btn) -> {
                 if(stack.get(ModComponents.IS_SOUNDAROUND_COMPONENT).value()){
                     this.client.interactionManager.clickButton(handler.syncId, 20);

@@ -39,7 +39,11 @@ public class SEBListEntry extends AlwaysSelectedEntryListWidget.Entry<SEBListEnt
             }
 
             if(sound == null){return;}
-            String soundName = sound.soundIdentifier().getPath().substring(sound.soundIdentifier().getPath().indexOf('/') + 1) + " " + sound.pitch();
+            String soundName = sound.soundIdentifier().getPath();
+            if(pitch == -1){
+                soundName = soundName + " " + sound.pitch();
+            }
+//            String soundName = sound.soundIdentifier().getPath().substring(sound.soundIdentifier().getPath().indexOf('/') + 1) + " " + sound.pitch();
             context.drawText(client.textRenderer, soundName, X, y + (entryHeight / 2) - 4, 0xFFFFFF, false);
         }
     }
@@ -64,8 +68,10 @@ public class SEBListEntry extends AlwaysSelectedEntryListWidget.Entry<SEBListEnt
         else {
             return true;
         }
+        if(sounds.get(index) == null) return true;
+
         PlayerFollowingSoundInstance soundInstance = new PlayerFollowingSoundInstance(
-                client.player, sounds.get(index), SoundCategory.MASTER, pitch);
+                client.player, sounds.get(index), SoundCategory.MASTER, (pitch == -1)? sounds.get(index).pitch(): pitch);
         client.getSoundManager().play(soundInstance);
         return true;
     }

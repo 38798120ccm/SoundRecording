@@ -1,16 +1,16 @@
-package com.soundrecording.Screens.MP4Player;
+package com.soundrecording.Screens;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ButtonTextures;
 import net.minecraft.client.gui.widget.TexturedButtonWidget;
 import net.minecraft.util.Identifier;
 
-public class MP4Button extends TexturedButtonWidget {
+public class StateButton extends TexturedButtonWidget {
     protected final ButtonTextures textures0;
     protected final ButtonTextures textures1;
     protected int textureid;
 
-    public MP4Button(int x, int y, int width, int height, ButtonTextures textures0, ButtonTextures textures1, int id, PressAction pressAction) {
+    public StateButton(int x, int y, int width, int height, ButtonTextures textures0, ButtonTextures textures1, int id, PressAction pressAction) {
         super(x, y, width, height, textures0, pressAction);
         this.textures0 = textures0;
         this.textures1 = textures1;
